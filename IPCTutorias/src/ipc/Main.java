@@ -22,7 +22,6 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("FXMLMain.fxml"));
         
         Scene scene = new Scene(root);
-        
         stage.setScene(scene);
         stage.show();
     }
@@ -32,6 +31,7 @@ public class Main extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+        System.out.println("Vaya risa Maria Luisa");
     }
     
 }
