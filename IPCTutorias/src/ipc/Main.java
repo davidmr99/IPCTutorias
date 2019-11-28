@@ -24,6 +24,10 @@ public class Main extends Application {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+        
+        //Al abrirse la ventana, se ajusta al tamaño minimo necesario, ponemos ese tamaño como el mínimo de la ventana
+        stage.setMinWidth(stage.getWidth());
+        stage.setMinHeight(stage.getHeight());
     }
 
     /**

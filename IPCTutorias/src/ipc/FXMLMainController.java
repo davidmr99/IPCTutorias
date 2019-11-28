@@ -10,7 +10,12 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import myLibrary.SwitchButton;
 
 /**
  *
@@ -19,17 +24,55 @@ import javafx.scene.control.Label;
 public class FXMLMainController implements Initializable {
     
     @FXML
-    private Label label;
-    
+    private VBox sideBar;
     @FXML
-    private void handleButtonAction(ActionEvent event) {
-        System.out.println("You clicked me!");
-        label.setText("Hello World!");
+    private BorderPane borderPane;
+    @FXML
+    private VBox filtroAsignaturas;
+    @FXML
+    private CheckBox selectAllSubjects;
+    @FXML
+    private ScrollPane scrollSubjects;
+    @FXML
+    private Button mesesBtn;
+    @FXML
+    private Button semanasBtn;
+    @FXML
+    private Button diasBtn;
+    
+    private String styleSheet = "styles/Main.css";
+    
+    public FXMLMainController(){
+    }
+    
+    private void handleButtonAction(ActionEvent e) {
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        SwitchButton btn = new SwitchButton();
+        btn.setVisible(true);
+        
+        Button b = new Button("jeje");
+        sideBar.getChildren().add(0,btn);
+        borderPane.setCenter(b);
+        
+        for(int i=0;i<10;i++) {
+            filtroAsignaturas.getChildren().add(new CheckBox(Integer.toString(i)+"dawdawdawdawwdwdawdawdawdaw"));
+        }
+        scrollSubjects.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollSubjects.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollSubjects.disableProperty().bind(selectAllSubjects.selectedProperty());
+        
+        borderPane.getStylesheets().add(styleSheet);
+        
+        
+        mesesBtn.getStylesheets().add(styleSheet);
+        semanasBtn.getStylesheets().add(styleSheet);
+        diasBtn.getStylesheets().add(styleSheet);
+        mesesBtn.setId("monthBtn");
+        semanasBtn.setId("weekBtn");
+        diasBtn.setId("dayBtn");
+        
     }    
-    
 }

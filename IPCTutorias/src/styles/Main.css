@@ -1,0 +1,82 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 28-nov-2019, 17:09:01
+    Author     : FMR
+*/
+
+#on, #off, #btn {
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+#on, #off {
+    -fx-border-color: grey;
+}
+
+#on {
+    -fx-background-color: green;
+    -fx-text-fill:white;
+    -fx-padding: 0px 0px 0px 4px;
+}
+
+#off {
+    -fx-background-color: grey;
+    -fx-text-fill:black;
+    -fx-padding: 0px 4px 0px 0px;
+}
+
+#btn {
+    -fx-background-color: blue;
+}
+
+.check-box .box {
+
+-fx-background-color: white;
+-fx-border-color:grey;
+-fx-border-radius:3px; 
+
+}
+
+.check-box:selected .mark {
+
+-fx-background-color: white;
+
+}
+
+.check-box:selected .box {
+
+-fx-background-color: #28a3f4;
+}
+
+#monthBtn, #weekBtn, #dayBtn {
+    -fx-background-radius: 0px;
+    -fx-background-color: dimgray;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+    -fx-border-width: 0px 0px 1px 0px;
+}
+
+#dayBtn {
+    -fx-border-width: 0px 0px 0px 0px;
+}
+
+#monthBtn:hover, #weekBtn:hover, #dayBtn:hover {
+    -fx-background-radius: 0px;
+    -fx-background-color: darkgray;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+    -fx-border-width: 0px 0px 1px 0px;
+    -fx-cursor:hand;
+}
+
+#dayBtn:hover {
+    -fx-border-width: 0px 0px 0px 0px;
+}
+
+.button:hover, .check-box {
+    -fx-cursor:hand;
+}
