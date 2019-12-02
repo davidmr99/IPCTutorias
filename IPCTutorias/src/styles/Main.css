@@ -80,3 +80,14 @@ and open the template in the editor.
 .button:hover, .check-box {
     -fx-cursor:hand;
 }
+
+.toolbarBtn {
+    -fx-border-radius: 0px;
+    -fx-background-radius: 0px;
+    -fx-background-color: orange;
+}
+
+.title {
+    -fx-font-size:1.5em;
+    -fx-font-weight:bold;
+}

@@ -3,73 +3,134 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ipc.main.FXMLMainController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" prefWidth="600.0" stylesheets="@../../styles/Main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ipc.main.FXMLMainController">
    <children>
-      <ToolBar prefHeight="40.0" prefWidth="200.0">
+      <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
         <items>
-          <Button mnemonicParsing="false" text="Button" />
+            <Button fx:id="configBtn" mnemonicParsing="false" styleClass="toolbarBtn">
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/config-icon.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="addBtn" mnemonicParsing="false" styleClass="toolbarBtn">
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/add-icon.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+          <Button fx:id="viewtutsBtn" mnemonicParsing="false" styleClass="toolbarBtn">
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/view-tuts-icon.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Text fx:id="debug" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+            <Text fx:id="debug1" layoutX="175.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
         </items>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
       </ToolBar>
-      <BorderPane fx:id="borderPane" style="-fx-background-color: blue;" VBox.vgrow="ALWAYS">
-         <left>
-            <AnchorPane prefHeight="450.0" style="-fx-background-color: red;" BorderPane.alignment="CENTER">
-               <children>
-                  <VBox fx:id="sideBar" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefHeight="450.0" prefWidth="220.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <Label text="Asignaturas" />
-                        <Separator prefWidth="200.0" />
-                        <CheckBox fx:id="selectAllSubjects" mnemonicParsing="false" text="Seleccionar todas" />
-                        <AnchorPane maxHeight="1.7976931348623157E308" prefWidth="200.0">
+      <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+         <children>
+            <SplitPane fx:id="splitPane" dividerPositions="0.1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <items>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;">
+                     <bottom>
+                        <AnchorPane BorderPane.alignment="CENTER">
                            <children>
-                              <ScrollPane fx:id="scrollSubjects" fitToHeight="true" fitToWidth="true" pannable="true" prefHeight="10000.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <content>
-                                    <VBox fx:id="filtroAsignaturas" fillWidth="false" maxHeight="-Infinity" pickOnBounds="false" prefHeight="0.0" prefWidth="0.0" spacing="10.0">
+                              <VBox fx:id="calendarMenuVBox" minWidth="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                 <children>
+                                    <Separator prefWidth="200.0">
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
                                        <padding>
-                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                          <Insets bottom="10.0" />
                                        </padding>
-                                    </VBox>
-                                 </content>
-                              </ScrollPane>
+                                    </Separator>
+                                    <Button fx:id="mesesBtn" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#swapCalendarView" text="MESES" />
+                                    <Button fx:id="semanasBtn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#swapCalendarView" text="SEMANAS" />
+                                    <Button fx:id="diasBtn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#swapCalendarView" text="DIAS" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </VBox>
                            </children>
                         </AnchorPane>
-                        <VBox>
-                           <children>
-                              <Separator prefWidth="200.0">
-                                 <opaqueInsets>
-                                    <Insets />
-                                 </opaqueInsets>
-                                 <padding>
-                                    <Insets bottom="10.0" />
-                                 </padding>
-                              </Separator>
-                              <Button fx:id="mesesBtn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="MESES" />
-                              <Button fx:id="semanasBtn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="SEMANAS" />
-                              <Button fx:id="diasBtn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="DIAS" />
-                           </children>
-                           <padding>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </padding>
-                        </VBox>
-                     </children>
+                     </bottom>
+                     <effect>
+                        <DropShadow height="0.0" radius="4.75" />
+                     </effect>
+                     <opaqueInsets>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </opaqueInsets>
                      <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </padding>
-                  </VBox>
-               </children>
-               <effect>
-                  <DropShadow height="0.0" radius="4.75" />
-               </effect>
-            </AnchorPane>
-         </left>
-      </BorderPane>
+                     <top>
+                        <VBox fx:id="menu0" alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <Separator prefWidth="200.0" />
+                              <Label styleClass="title" text="Alumnos" />
+                              <ComboBox fx:id="comboBox" maxWidth="1.7976931348623157E308" prefWidth="150.0" promptText="Seleccione un alumno" />
+                              <Separator prefWidth="200.0" />
+                              <Label styleClass="title" text="Asignaturas" />
+                              <CheckBox fx:id="selectAllSubjects" mnemonicParsing="false" text="Seleccionar todas" />
+                              <AnchorPane maxHeight="1.7976931348623157E308" prefWidth="200.0" />
+                           </children>
+                           <padding>
+                              <Insets top="10.0" />
+                           </padding>
+                        </VBox>
+                     </top>
+                     <center>
+                        <ScrollPane fx:id="scrollSubjects" fitToHeight="true" fitToWidth="true" minHeight="200.0" pannable="true" prefWidth="200.0" BorderPane.alignment="TOP_CENTER">
+                           <content>
+                              <VBox fx:id="filtroAsignaturas" fillWidth="false" maxHeight="-Infinity" pickOnBounds="false" prefHeight="0.0" prefWidth="0.0" spacing="10.0">
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </VBox>
+                           </content>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </ScrollPane>
+                     </center>
+                  </BorderPane>
+                  <AnchorPane fx:id="contextPane" prefHeight="200.0" prefWidth="200.0" />
+               </items>
+            </SplitPane>
+         </children>
+      </AnchorPane>
    </children>
 </VBox>
