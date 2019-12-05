@@ -5,6 +5,7 @@
  */
 package ipc;
 
+import ipc.main.FXMLMainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,10 +17,11 @@ import javafx.stage.Stage;
  * @author FMR
  */
 public class Main extends Application {
-    
+    private static FXMLLoader loader;
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("main/FXMLMain.fxml"));
+        loader = new FXMLLoader(getClass().getResource("main/FXMLMain.fxml"));
+        Parent root = loader.load();
         
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -35,6 +37,10 @@ public class Main extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+    
+    public static FXMLMainController getMainController(){
+        return loader.getController();
     }
     
 }

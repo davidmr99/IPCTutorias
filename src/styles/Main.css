@@ -91,3 +91,44 @@ and open the template in the editor.
     -fx-font-size:1.5em;
     -fx-font-weight:bold;
 }
+
+#scrollWeek {
+    -fx-fit-to-width: true;
+}
+
+#weekCell.minMark {
+    /*-fx-stroke-dash-array: 12 2 4 2; -fx-stroke-width: 5;*/
+    /*-fx-border-style: dashed;*/
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: black;
+    -fx-border-style: segments(5,5);
+}
+
+#weekCell.par {
+    /*-fx-background-color:blue;*/
+}
+
+
+#weekCell.impar {
+    -fx-background-color:azure;
+}
+
+.day-name-cell, .week-number-cell {
+    -fx-background-color:moccasin;
+}
+
+.week-number-cell {
+    -fx-cursor:hand;
+}
+
+.date-cell{
+    -fx-pref-height: 218521623122;
+}
+
+.tutoriaBtn {
+    -fx-borde-width: 2;
+    -fx-border-color: black;
+    -fx-background-color: orange;
+    -fx-border-radius:10px;
+    -fx-background-radius:10px;
+}
