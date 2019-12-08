@@ -21,10 +21,11 @@ import javafx.scene.control.Label;
 public class SwitchButton extends Label
 {
     private SimpleBooleanProperty switchedOn = new SimpleBooleanProperty(true);
-
+    private Button switchBtn;
+    
     public SwitchButton()
     {
-        Button switchBtn = new Button();
+        switchBtn = new Button();
         switchBtn.setPrefWidth(40);
         switchBtn.setId("btn");
         switchBtn.setCursor(javafx.scene.Cursor.HAND);
@@ -66,4 +67,8 @@ public class SwitchButton extends Label
     }
 
     public SimpleBooleanProperty switchOnProperty() { return switchedOn; }
+    
+    public Button getButton(){
+        return switchBtn;
+    }
 }

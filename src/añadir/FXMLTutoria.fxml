@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane dividerPositions="0.2" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="625.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="añadir.FXMLTutoriaController">
+  <items>
+      <VBox alignment="CENTER" minWidth="150.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0" SplitPane.resizableWithParent="false">
+         <children>
+            <ComboBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Alumno(s)" />
+            <ListView maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" />
+            <Separator prefWidth="200.0" />
+            <ComboBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Asignatura" />
+            <Separator prefWidth="200.0" />
+            <Label text="Detalles" />
+            <TextArea fx:id="descripcionField" editable="false" onMouseClicked="#editTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </TextArea>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+         <children>
+            <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <bottom>
+                  <HBox alignment="CENTER_RIGHT" spacing="10.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Button mnemonicParsing="false" text="Aceptar" />
+                        <Button cancelButton="true" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Cancelar" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+               </bottom>
+               <center>
+                  <GridPane hgap="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints valignment="CENTER" />
+                      <RowConstraints valignment="CENTER" />
+                    </rowConstraints>
+                     <children>
+                        <AnchorPane fx:id="calendarAnchor" prefHeight="200.0" prefWidth="200.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                        <Label fx:id="dayLabel" text="Label" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="NEVER" />
+                        <AnchorPane fx:id="dayAnchor" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                        <VBox alignment="BOTTOM_CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" GridPane.vgrow="NEVER">
+                           <children>
+                              <HBox alignment="BOTTOM_CENTER" spacing="10.0">
+                                 <children>
+                                    <VBox spacing="10.0">
+                                       <children>
+                                          <Label text="Hora de Inicio:" />
+                                          <Spinner fx:id="hInicio" />
+                                          <Label layoutX="10.0" layoutY="10.0" text="Minutos de Inicio:" />
+                                          <Spinner fx:id="mInicio" />
+                                       </children>
+                                    </VBox>
+                                    <VBox alignment="CENTER">
+                                       <children>
+                                          <Label contentDisplay="RIGHT" text="Duración:" textAlignment="RIGHT" />
+                                          <Spinner fx:id="duracion" />
+                                          <Label fx:id="timeLabel" text="Label" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                     <BorderPane.margin>
+                        <Insets />
+                     </BorderPane.margin>
+                  </GridPane>
+               </center>
+            </BorderPane>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </AnchorPane>
+  </items>
+</SplitPane>

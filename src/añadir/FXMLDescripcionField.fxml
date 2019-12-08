@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="añadir.FXMLDescripcionFieldController">
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" spacing="10.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button mnemonicParsing="false" onAction="#aceptar" text="Aceptar" HBox.hgrow="ALWAYS" />
+            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#cancelar" text="Cancelar" HBox.hgrow="ALWAYS" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </HBox>
+   </bottom>
+   <center>
+      <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+         <content>
+            <TextArea fx:id="textArea" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+         </content>
+      </ScrollPane>
+   </center>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</BorderPane>

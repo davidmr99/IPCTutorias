@@ -5,17 +5,32 @@
 */
 package ipc.main.weekView;
 
+import ipc.Main;
+import ipc.main.FXMLMainController;
 import static java.lang.Integer.MAX_VALUE;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.Year;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.Event;
 import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.PickResult;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
@@ -25,53 +40,177 @@ import javafx.scene.text.Text;
  */
 public class Week extends GridPane{
     
-    private int days,hours,division;
+    private int days,hours = 12 ,division= 10;
     private int selectedDay = -1, startingHour = -1;
     private int lastRowIndex;
     private Button tutoriaBtn;
     private Tooltip t = new Tooltip("Click para añadir tutoría");
     private Pane endOne;
+    private LocalDate[] daysArray;
+    private int year, week;
+    private boolean fromMainWindow;
     
-    public Week(int days, int hours, int division){
-        this.days = days;
-        this.hours = hours;
-        this.division = division;
+    public Week(int days,boolean fromMainWindow){
+        this.days = days + 1;
+        this.fromMainWindow = fromMainWindow;
+        
+        getStylesheets().add("/styles/Main.css");
         
         for(int i=0;i< hours * (60/division);i++) {
             RowConstraints row = new RowConstraints(20);
             row.setValignment(VPos.TOP);
             getRowConstraints().add(row);
         }
-        for(int i=0;i< days;i++) {
-            ColumnConstraints column = new ColumnConstraints(100);
+        for(int i=0;i< this.days;i++) {
+            ColumnConstraints column = new ColumnConstraints();
             column.setFillWidth(true);
-            column.setPercentWidth(((Double)(100/(double)days)));
+            column.setHgrow(Priority.ALWAYS);
+            if(fromMainWindow){
+                column.setPercentWidth(((Double)(100/(double)this.days)));
+            }else{
+                if(i==0){
+                    column.setPercentWidth(20d);
+                }else{
+                    column.setPercentWidth(80d);
+                }
+            }
             getColumnConstraints().add(column);
         }
         //setGridLinesVisible(true);
     }
+    public void setWeekDays(LocalDate day){
+        daysArray = new LocalDate[7];
+        year = day.getYear();
+        week = (day.getDayOfYear()/7)+1;
+        int firstDayOfWeek = ((week - 1)*7+1) + (1 - (LocalDate.of(year,1, 1)).getDayOfWeek().getValue());
+        if(firstDayOfWeek<=0){
+            year--;
+            int n;
+            if(Year.isLeap(year)){
+                n = 366;
+            }else {
+                n = 365;
+            }
+            firstDayOfWeek = n + firstDayOfWeek;
+        }
+        for(int i=0;i<7;i++){
+            daysArray[i] = LocalDate.ofYearDay(year, firstDayOfWeek).plusDays(i);
+        }
+        System.out.println("Week "+week +": "+daysArray[0]+" - "+ daysArray[6]);
+    }
+    
+    public void setDay(LocalDate day){
+        year = day.getYear();
+        week = (day.getDayOfYear()/7)+1;
+        daysArray = new LocalDate[1];
+        daysArray[0] = day;
+    }
     
     public void init(){
-        
+        int h = 8;
+        int m = 0;
         for(int i=0;i< days;i++) {
             for(int j=0;j< hours * (60/division);j++) {
-                addPane(i,j);
+                if(i!=0){
+                    addPane(i,j);
+                }else {
+                    if(j % 3 == 0){
+                        if(j>0){
+                            if(j % 6 == 0){
+                                h++;
+                            }
+                            if(m==30){
+                                m=0;
+                            }else {
+                                m = 30;
+                            }
+                        }
+                        Label l = new Label(h+":"+m);
+                        l.setMaxWidth(MAX_VALUE);
+                        l.setAlignment(Pos.CENTER);
+                        add(l ,i, j);
+                        
+                    }
+                }
             }
         }
+    }
+    
+    public void initButton(){
+        if(getChildren().contains(tutoriaBtn)){
+            getChildren().remove(tutoriaBtn);
+        }
         tutoriaBtn = new Button();
-        tutoriaBtn.setPrefSize(MAX_VALUE, MAX_VALUE);
-        tutoriaBtn.setMinSize(((Pane)getChildren().get(0)).getWidth(), ((Pane)getChildren().get(0)).getHeight());
         tutoriaBtn.getStyleClass().add("tutoriaBtn");
-        add(tutoriaBtn, 4, 30,1,1);
-        setFillWidth(tutoriaBtn, true);
-        setFillHeight(tutoriaBtn, true);
+    }
+    
+    private void initDrag(MouseEvent evt){
+        Pane src = (Pane) evt.getSource();
+        System.out.println("columns.rows :"+getColumnIndex(src)+" , "+getRowIndex(src));
+        initButton();
+    }
+    
+    public void drawButtonAndStuff(int evtSrcRow,int srcRow){
+        Pane evtSrc = null;
+        Pane src = null;
+        System.out.println("indexes: " + evtSrcRow+"    "+srcRow);
+        for(Node n:getChildren()){
+            if(getColumnIndex(n) == 1){
+                if(getRowIndex(n) == evtSrcRow){
+                    evtSrc = (Pane)n;
+                }
+                if(getRowIndex(n) == srcRow){
+                    src = (Pane)n;
+                }
+            }
+        }
+        lastRowIndex = srcRow;
+        endOne = src;
+        drawButtonAndStuff(evtSrc,src);
+    }
+    
+    private void drawButtonAndStuff(Pane eventSource,Pane source){
+        add(tutoriaBtn, getColumnIndex(eventSource), getRowIndex(eventSource), 1, lastRowIndex - getRowIndex(eventSource) + 1);
+        tutoriaBtn.setPrefSize(tutoriaBtn.getParent().getBoundsInLocal().getWidth(), tutoriaBtn.getParent().getBoundsInLocal().getHeight());
+        tutoriaBtn.setMinSize(((Control)getChildren().get(0)).getWidth(), ((Control)getChildren().get(0)).getHeight());
+        LocalDateTime inicio = getTime(getColumnIndex(eventSource),getRowIndex(eventSource));
+        LocalDateTime fin = getTime(getColumnIndex(source),lastRowIndex+1);
+        Text text = new Text(inicio.getHour() + ":" + inicio.getMinute() + " - " + fin.getHour() + ":" + fin.getMinute());
+        tutoriaBtn.setGraphic(text);
+        tutoriaBtn.prefWidthProperty().bind(((Pane)tutoriaBtn.getParent()).widthProperty());
+        tutoriaBtn.prefHeightProperty().bind(((Pane)tutoriaBtn.getParent()).heightProperty());
+        tutoriaBtn.setOnMouseClicked((event) -> {
+            
+            if(fromMainWindow){
+                Main.getMainController().launchTutFromWeekPane(inicio,fin,getRowIndex(eventSource),lastRowIndex);
+                getChildren().remove(tutoriaBtn);
+                Main.getMainController().getAddTutoriaBtn().fire();
+            }
+        });
+        
+        t.hide();
+        Bounds bounds = endOne.getBoundsInLocal();
+        Bounds screenBounds = endOne.localToScreen(bounds);
+        if(fromMainWindow){
+            t.show(endOne.getScene().getWindow(),screenBounds.getMaxX(),screenBounds.getMaxY());
+        }
+        
+        MyTask mt = new MyTask();
+        
+        Thread th = new Thread(mt);
+        th.setDaemon(true);
+        th.start();
+        for(Node node:getChildren()){
+            node.setStyle("");
+        }
     }
     
     private void addPane(int i, int j) {
-        Pane pane = new Pane(new Text(i+","+j));
+        Pane pane = new Pane();
         pane.getStylesheets().add("styles/Main.css");
         pane.setId("weekCell");
-        
+        pane.setMaxWidth(MAX_VALUE);
+
         if(j % 3 == 0){
             pane.getStyleClass().add("minMark");
         }
@@ -80,18 +219,11 @@ public class Week extends GridPane{
         }else {
             pane.getStyleClass().add("impar");
         }
-        
-        
+
+
         pane.setOnDragDetected(evt -> {
-            Pane src = (Pane) evt.getSource();
-            System.out.println("DRAGDETECTED");
-            System.out.println("columns.rows :"+getColumnIndex(src)+" , "+getRowIndex(src));
-            if(getChildren().contains(tutoriaBtn)){
-                getChildren().remove(tutoriaBtn);
-            }
-            tutoriaBtn = new Button();
-            tutoriaBtn.getStyleClass().add("tutoriaBtn");
-            
+
+            initDrag(evt);
             for(Node node: getChildren()){
                 if(getColumnIndex(node) == i && getRowIndex(node) == j){
                     System.out.println(i+" ...,,.. "+j);
@@ -103,14 +235,16 @@ public class Week extends GridPane{
                 }
             }
         });
-        
+
         pane.setOnMouseDragOver(evt -> {
             Pane source = (Pane) evt.getSource();
             Pane eventSource = (Pane) evt.getGestureSource();
-            System.out.println("over " + ((Text)((Pane)source).getChildren().get(0)).getText());
-            
+
             if( j > getRowIndex(eventSource)){
                 for(Node node: getChildren()){
+                    if(getColumnIndex(node) == i && getRowIndex(node) == j){
+                        System.out.println("Over: "+i+", "+j);
+                    }
                     if(!(node instanceof Button)){
                         if(getColumnIndex(node) == getColumnIndex(eventSource) && getRowIndex(node) >= getRowIndex(eventSource) && getRowIndex(node) <= j){
                             if(j - getRowIndex(eventSource) < 8){
@@ -128,22 +262,34 @@ public class Week extends GridPane{
                     }
                 }
             }
-            
-//FUNCIONA
-//            for(Node node: getChildren()){
-//                if(node == source){
-//                    if(i == getColumnIndex(eventSource) && j > getRowIndex(eventSource)){
-//                        System.out.println("SI! yo: "+i+", "+j+"    eSource: "+getColumnIndex(eventSource)+", "+getRowIndex(eventSource));
-//                        source.setStyle("-fx-background-color: cyan;");
-//                        list.add(((Pane) evt.getSource()));
-//                    }
-//                }else{
-//                    node.setStyle("");
-//                }
-//            }
+
+    //FUNCIONA
+    //            for(Node node: getChildren()){
+    //                if(node == source){
+    //                    if(i == getColumnIndex(eventSource) && j > getRowIndex(eventSource)){
+    //                        System.out.println("SI! yo: "+i+", "+j+"    eSource: "+getColumnIndex(eventSource)+", "+getRowIndex(eventSource));
+    //                        source.setStyle("-fx-background-color: cyan;");
+    //                        list.add(((Pane) evt.getSource()));
+    //                    }
+    //                }else{
+    //                    node.setStyle("");
+    //                }
+    //            }
         });
-        
-        
+
+        pane.setOnMouseClicked((event) -> {
+            initDrag(event);
+            Object source = event.getSource();
+            Tooltip.uninstall(endOne, t);
+            endOne = (Pane)source;
+            lastRowIndex = getRowIndex(endOne);
+            drawButtonAndStuff(endOne,endOne);
+            if(!fromMainWindow){
+                Main.getMainController().getTutoriaController().updateLabelsFromOutside(lastRowIndex,lastRowIndex);
+            }
+        });
+
+
         pane.setOnMouseDragReleased(evt -> {
             Pane source = (Pane) evt.getSource();
             Pane eventSource = (Pane) evt.getGestureSource();
@@ -159,7 +305,8 @@ public class Week extends GridPane{
                             }
                         }else {
                             node.setStyle("");
-                        }}
+                        }
+                    }
                 }
             }else if (getRowIndex(source) <= getRowIndex(eventSource)){
                 for(Node node: getChildren()){
@@ -175,42 +322,59 @@ public class Week extends GridPane{
                         }}
                 }
             }
-            add(tutoriaBtn, getColumnIndex(eventSource), getRowIndex(eventSource), 1, lastRowIndex - getRowIndex(eventSource) + 1);
-            tutoriaBtn.setPrefSize(MAX_VALUE, MAX_VALUE);
-            tutoriaBtn.setMinSize(((Pane)getChildren().get(0)).getWidth(), ((Pane)getChildren().get(0)).getHeight());
-            t.hide();
-            Tooltip.install(endOne, t);
-            Bounds bounds = endOne.getBoundsInLocal();
-            Bounds screenBounds = endOne.localToScreen(bounds);
-            
-            t.show(endOne.getScene().getWindow(),screenBounds.getMaxX(),screenBounds.getMaxY());
-            
-            MyTask mt = new MyTask();
-           
-            Thread th = new Thread(mt);
-            th.setDaemon(true);
-            th.start();
-                    
-            for(Node node:getChildren()){
-                node.setStyle("");
+            drawButtonAndStuff(eventSource,endOne);
+            if(!fromMainWindow){
+                Main.getMainController().getTutoriaController().updateLabelsFromOutside(getRowIndex(eventSource), getRowIndex(endOne));
             }
         });
-        
+
         add(pane, i, j);
     }
     class MyTask extends Task<Void>{
-
+        
         @Override
         protected Void call() throws Exception {
             
-                Thread.sleep(3500);
-                if(isCancelled())return null;
-                //updateMessage(LocalTime.now().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM)));
-                Platform.runLater(()->{
-                    t.hide();
-                });
+            Thread.sleep(3500);
+            if(isCancelled())return null;
+            //updateMessage(LocalTime.now().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM)));
+            Platform.runLater(()->{
+                t.hide();
+            });
             
             return null;
         }
+    }
+    
+    public LocalDateTime getTime(int i, int j){
+        LocalDate chosen = daysArray[i-1];
+        int h = 8 + j / 6;
+        int m = (j % 6) * 10;
+        LocalDateTime date = LocalDateTime.of(chosen.getYear(), chosen.getMonth(), chosen.getDayOfMonth(), h, m);
+        return date;
+    }
+    
+    public static LocalDateTime getTime(int j,boolean isFinal){
+        LocalDate chosen = LocalDate.of(2000, 1, 1);
+        int n=0;
+        if(isFinal){
+            n=1;
+        }
+        int h = 8 + (j+n) / 6;
+        int m = ((j+n) % 6) * 10;
+        LocalDateTime date = LocalDateTime.of(chosen.getYear(), chosen.getMonth(), chosen.getDayOfMonth(), h, m);
+        return date;
+    }
+    
+    public static int getIndex(LocalDateTime ldt,boolean isFinal){
+        int n=0;
+        if(isFinal){
+            n=-1;
+        }
+        return (ldt.getHour()-8) * 6 + (ldt.getMinute()/10) + n;
+    }
+    
+    public LocalDate[] getDays(){
+        return daysArray;
     }
 }

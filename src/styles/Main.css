@@ -99,7 +99,7 @@ and open the template in the editor.
 #weekCell.minMark {
     /*-fx-stroke-dash-array: 12 2 4 2; -fx-stroke-width: 5;*/
     /*-fx-border-style: dashed;*/
-    -fx-border-width: 0 0 1 0;
+    -fx-border-width: 1 0 0 0;
     -fx-border-color: black;
     -fx-border-style: segments(5,5);
 }
@@ -131,4 +131,7 @@ and open the template in the editor.
     -fx-background-color: orange;
     -fx-border-radius:10px;
     -fx-background-radius:10px;
+}
+.textArea:hover {
+    -fx-cursor:hand;
 }
