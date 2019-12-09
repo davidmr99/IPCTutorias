@@ -5,6 +5,8 @@
 */
 package añadir;
 
+import Configuracion.FXMLConfiguracionController;
+import accesoBD.AccesoBD;
 import ipc.main.contextPane.Calendar;
 import ipc.main.weekView.Week;
 import java.io.IOException;
@@ -12,28 +14,37 @@ import static java.lang.Integer.MAX_VALUE;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import modelo.Alumno;
+import modelo.Asignatura;
 
 /**
  * FXML Controller class
@@ -66,8 +77,16 @@ public class FXMLTutoriaController implements Initializable {
     private LocalDate date;
     private GridPane days;
     private int lastHInicioValue,lastMInicioValue,lastDuracionValue;
+    private ObservableList<Alumno> alumnos;
+    private static ObservableList<Alumno> alumnosElegidos;
     
     private LocalDateTime inicio,fin;
+    @FXML
+    private ComboBox<Alumno> alumnosComboBox;
+    @FXML
+    private ListView<Alumno> alumnosList;
+    @FXML
+    private ComboBox<Asignatura> asignaturasComboBox;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -81,11 +100,61 @@ public class FXMLTutoriaController implements Initializable {
         if(date == null){
             date = c.getDate();
         }
+        alumnosElegidos = FXCollections.observableArrayList();
+        
+        alumnos = AccesoBD.getInstance().getTutorias().getAlumnosTutorizados();
+        alumnosComboBox.setCellFactory(c-> new Celda());
+        alumnosComboBox.setButtonCell(new ListCell<Alumno>(){
+            @Override
+            protected void updateItem(Alumno item, boolean btl){
+                super.updateItem(item, btl);
+            }
+        });
+        alumnosComboBox.setItems(alumnos);
+        alumnosComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if(!alumnosElegidos.contains(newValue)){
+                alumnosElegidos.add(newValue);
+                    alumnosList.refresh();
+                    System.out.println("Click on "+newValue.getNombre());
+                    System.out.println("lista: "+ alumnosElegidos.toString());
+            }
+        });
+        
+        alumnosList.setItems(alumnosElegidos);
+        alumnosList.setCellFactory(lv -> {
+            ListCell<Alumno> cell = new ListCell<Alumno>() {
+                @Override
+                protected void updateItem(Alumno item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setText(null);
+                    } else {
+                        Image img = new Image("/ipc/resources/cancel-icon.png");
+                        ImageView imgView = new ImageView(img);
+                        imgView.setFitHeight(28);
+                        imgView.setFitWidth(28);
+                        HBox h = new HBox(new Label(item.getApellidos() + ", " + item.getNombre()+" "),imgView);
+                        setCursor(Cursor.HAND);
+                        setGraphic(h);
+                    }
+                }
+            };
+            cell.setOnMouseClicked(e -> {
+                if (! cell.isEmpty()) {
+                    System.out.println("Click on "+cell.getItem().getNombre());
+                    alumnosElegidos.remove(cell.getItem());
+                    alumnosList.refresh();
+                    System.out.println("lista: "+alumnosElegidos.toString());
+                }
+            });
+            return cell ;
+        });
         
         daysButton();
-        
-        
-        
+    }
+    
+    public static ObservableList<Alumno> getSelectedAlumnos(){
+        return alumnosElegidos;
     }
     
     private void daysButton() {
@@ -208,7 +277,7 @@ c.getCalendar().setOnMouseClicked((event) -> {
         mInicio.setValueFactory(mInicioFactory);
         lastMInicioValue = mInicio.getValue();
         
-        SpinnerValueFactory<Integer>duracionFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 8*10, getDuracionMins(inicio,fin),10);
+        SpinnerValueFactory<Integer>duracionFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(10, FXMLConfiguracionController.getMaxDurTut()*10, getDuracionMins(inicio,fin),10);
         duracion.setValueFactory(duracionFactory);
         lastDuracionValue = duracion.getValue();
         
@@ -257,7 +326,7 @@ c.getCalendar().setOnMouseClicked((event) -> {
             lastMInicioValue = mInicio.getValue();
         }
         if(duracion.getValueFactory()==null){
-            SpinnerValueFactory<Integer> duracionFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 8*10, 20,10);
+            SpinnerValueFactory<Integer> duracionFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(10, FXMLConfiguracionController.getMaxDurTut()*10, 20,10);
             duracion.setValueFactory(duracionFactory);
             lastDuracionValue = duracion.getValue();
         }
@@ -292,5 +361,18 @@ c.getCalendar().setOnMouseClicked((event) -> {
     
     public int getDuracionMins(LocalDateTime inicio,LocalDateTime fin){
         return (fin.getHour()-inicio.getHour()) * 60 + (fin.getMinute() - inicio.getMinute());
+    }
+}
+class Celda extends ListCell<Alumno> {
+    
+    @Override
+    protected void updateItem(Alumno item, boolean empty) {
+        super.updateItem(item, empty);
+        if (item == null || empty) {
+            setText(null);
+        } else {
+            setText(item.getApellidos() + ", " + item.getNombre());
+            setStyle("-fx-background-color:lightgrey;");
+        }
     }
 }

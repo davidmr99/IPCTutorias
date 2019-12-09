@@ -10,6 +10,7 @@ import com.sun.javafx.scene.control.skin.DatePickerSkin;
 import ipc.Main;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.Random;
@@ -66,6 +67,11 @@ public class Calendar{
                             if(item.isBefore(LocalDate.now())){
                                 setDisable(true);
                             }
+                        }
+                        DayOfWeek day = DayOfWeek.from(item);
+                        if(day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY){
+                            setDisable(true);
+                           setStyle("-fx-background-color: gainsboro;");
                         }
                         if(item.isAfter(LocalDate.now().minusWeeks(1)) && item.isBefore(LocalDate.now())) {
 //                            setStyle("-fx-background-color: green;");

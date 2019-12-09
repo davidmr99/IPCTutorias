@@ -5,6 +5,8 @@
  */
 package añadir;
 
+import accesoBD.AccesoBD;
+import ipc.Main;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -13,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import modelo.Alumno;
 
 /**
  * FXML Controller class
@@ -30,6 +33,8 @@ public class FXMLAlumnoController implements Initializable {
     @FXML
     private Button addAlumno;
 
+    private Alumno alumno = null;
+    
     /**
      * Initializes the controller class.
      */
@@ -44,10 +49,19 @@ public class FXMLAlumnoController implements Initializable {
         if ((!nombreAlumno.getText().isEmpty())
                 && (nombreAlumno.getText().trim().length() != 0)
                 && (!apellidoAlumno.getText().isEmpty())
-                && (apellidoAlumno.getText().trim().length() != 0)) {
+                && (apellidoAlumno.getText().trim().length() != 0)
+                && (!mailAlumno.getText().isEmpty())
+                && (mailAlumno.getText().trim().length() != 0)) {
+            alumno = new Alumno();
+            alumno.setNombre(nombreAlumno.getText().trim());
+            alumno.setEmail(mailAlumno.getText().trim());
+            alumno.setApellidos(apellidoAlumno.getText().trim());
+            
+            save();
             
             nombreAlumno.clear();
             apellidoAlumno.clear();
+            mailAlumno.clear();
             nombreAlumno.requestFocus();
             ((Stage)nombreAlumno.getScene().getWindow()).close();
         }
@@ -57,5 +71,8 @@ public class FXMLAlumnoController implements Initializable {
     private void cancelar(ActionEvent event) {
         ((Stage)nombreAlumno.getScene().getWindow()).close();
     }
-    
+    public void save(){
+        AccesoBD.getInstance().getTutorias().getAlumnosTutorizados().add(alumno);
+        AccesoBD.getInstance().salvar();
+    }
 }

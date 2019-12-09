@@ -5,6 +5,7 @@
 */
 package ipc.main.weekView;
 
+import Configuracion.FXMLConfiguracionController;
 import ipc.Main;
 import ipc.main.FXMLMainController;
 import static java.lang.Integer.MAX_VALUE;
@@ -201,7 +202,9 @@ public class Week extends GridPane{
         th.setDaemon(true);
         th.start();
         for(Node node:getChildren()){
-            node.setStyle("");
+            if(getColumnIndex(node) != 6 && getColumnIndex(node) != 7){
+                node.setStyle("");
+            }
         }
     }
     
@@ -219,7 +222,10 @@ public class Week extends GridPane{
         }else {
             pane.getStyleClass().add("impar");
         }
-
+        if(i == 6 || i == 7){
+            pane.setDisable(true);
+            pane.setStyle("-fx-background-color: gainsboro;");
+        }else{
 
         pane.setOnDragDetected(evt -> {
 
@@ -231,7 +237,9 @@ public class Week extends GridPane{
                     node.startFullDrag();
                     lastRowIndex = j;
                 }else{
-                    node.setStyle("");
+                    if(getColumnIndex(node) != 6 && getColumnIndex(node) != 7){
+                        node.setStyle("");
+                    }
                 }
             }
         });
@@ -247,17 +255,19 @@ public class Week extends GridPane{
                     }
                     if(!(node instanceof Button)){
                         if(getColumnIndex(node) == getColumnIndex(eventSource) && getRowIndex(node) >= getRowIndex(eventSource) && getRowIndex(node) <= j){
-                            if(j - getRowIndex(eventSource) < 8){
+                            if(j - getRowIndex(eventSource) < FXMLConfiguracionController.getMaxDurTut()){
                                 System.out.println("SI! yo: "+i+", "+j+"    eSource: "+getColumnIndex(eventSource)+", "+getRowIndex(eventSource));
                                 if(node != eventSource){
                                     node.setStyle("-fx-background-color: cyan;");
                                 }
                                 lastRowIndex = j;
-                            }else if(getRowIndex(node)- getRowIndex(eventSource) >= 8) {
+                            }else if(getRowIndex(node)- getRowIndex(eventSource) >= FXMLConfiguracionController.getMaxDurTut()) {
                                 node.setStyle("-fx-background-color: red;");
                             }
                         }else{
-                            node.setStyle("");
+                            if(getColumnIndex(node) != 6 && getColumnIndex(node) != 7){
+                                node.setStyle("");
+                            }
                         }
                     }
                 }
@@ -304,13 +314,20 @@ public class Week extends GridPane{
                                 endOne = (Pane)node;
                             }
                         }else {
-                            node.setStyle("");
+                            if(getColumnIndex(node) != 6 && getColumnIndex(node) != 7){
+                                node.setStyle("");
+                            }
                         }
                     }
                 }
             }else if (getRowIndex(source) <= getRowIndex(eventSource)){
                 for(Node node: getChildren()){
-                    if(!(node instanceof Button)){ node.setStyle("");}}
+                    if(!(node instanceof Button)){
+                        if(getColumnIndex(node) != 6 && getColumnIndex(node) != 7){
+                            node.setStyle("");
+                        }
+                    }
+                }
                 eventSource.setStyle("-fx-background-color: gray;");
                 endOne = (Pane)eventSource;
             }else {
@@ -327,7 +344,7 @@ public class Week extends GridPane{
                 Main.getMainController().getTutoriaController().updateLabelsFromOutside(getRowIndex(eventSource), getRowIndex(endOne));
             }
         });
-
+        }
         add(pane, i, j);
     }
     class MyTask extends Task<Void>{

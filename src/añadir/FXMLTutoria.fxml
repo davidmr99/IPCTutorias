@@ -6,6 +6,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
@@ -22,10 +23,18 @@
   <items>
       <VBox alignment="CENTER" minWidth="150.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0" SplitPane.resizableWithParent="false">
          <children>
-            <ComboBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Alumno(s)" />
-            <ListView maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" />
+            <ComboBox fx:id="alumnosComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Alumno(s)" />
+            <ScrollPane>
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0">
+                     <children>
+                        <ListView fx:id="alumnosList" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </ScrollPane>
             <Separator prefWidth="200.0" />
-            <ComboBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Asignatura" />
+            <ComboBox fx:id="asignaturasComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Asignatura" />
             <Separator prefWidth="200.0" />
             <Label text="Detalles" />
             <TextArea fx:id="descripcionField" editable="false" onMouseClicked="#editTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true">

@@ -26,7 +26,7 @@
                <children>
                   <Label minHeight="-Infinity" minWidth="-Infinity" text="Asignatura" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                   <Label minHeight="-Infinity" minWidth="-Infinity" text="Abreviatura" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                  <TextField fx:id="asignatura" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                  <TextField fx:id="asignaturaField" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                   <TextField fx:id="abreviatura" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
                </children>
             </GridPane>

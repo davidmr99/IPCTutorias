@@ -5,6 +5,7 @@
 */
 package ipc.main;
 
+import accesoBD.AccesoBD;
 import añadir.FXMLAlumnoController;
 import añadir.FXMLAsignaturaController;
 import añadir.FXMLTutoriaController;
@@ -13,9 +14,11 @@ import ipc.main.weekView.Week;
 import java.io.IOException;
 import static java.lang.Integer.MAX_VALUE;
 import java.net.URL;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,17 +29,21 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import modelo.Alumno;
+import modelo.Asignatura;
 import modelo.Tutoria;
 import myLibrary.SwitchButton;
 
@@ -69,7 +76,7 @@ public class FXMLMainController implements Initializable {
     @FXML
     private SplitPane splitPane;
     @FXML
-    private ComboBox<String> comboBox;
+    private ComboBox<Alumno> comboBox;
     @FXML
     private MenuItem addTutoria;
     @FXML
@@ -82,19 +89,18 @@ public class FXMLMainController implements Initializable {
     private ScrollPane sp;
     private Calendar c;
     private FXMLTutoriaController tutoriaController;
-    private boolean launchTutFromWeekPane = false;
     private LocalDateTime inicio,fin;
     private int eventSource, source;
     private ListView listView;
     private Node n;
     private SwitchButton btn;
+    private ObservableList<Alumno> alumnos;
+    private ObservableList<Asignatura> asignaturas;
     
     public FXMLMainController(){
         
     }
     
-    private void handleButtonAction(ActionEvent e) {
-    }
     
     public ScrollPane getScrollPane(){
         return scrollSubjects;
@@ -133,10 +139,20 @@ public class FXMLMainController implements Initializable {
         
         menu0.getChildren().add(0,btn);
         
-        for(int i=0;i<10;i++) {
-            comboBox.getItems().addAll(Integer.toString(i)+"nyas coca");
-            filtroAsignaturas.getChildren().add(new CheckBox(Integer.toString(i)+"molerioso"));
-        }
+        
+        alumnos = AccesoBD.getInstance().getTutorias().getAlumnosTutorizados();
+        comboBox.setCellFactory(c-> new Celda());
+        comboBox.setButtonCell(new ListCell<Alumno>(){
+            @Override
+            protected void updateItem(Alumno item, boolean btl){
+                super.updateItem(item, btl);
+                if(item != null) {
+                    setText(item.getApellidos()+", "+item.getNombre());
+                }
+            }
+        });
+        comboBox.setItems(alumnos);
+        reloadAlumnosYAsignaturas();
         
         scrollSubjects.maxHeightProperty().bind(filtroAsignaturas.heightProperty().add(20));
         scrollSubjects.setFitToHeight(true);
@@ -202,7 +218,13 @@ AnchorPane.setRightAnchor(calendarNode, 0d);
         stage.setScene(scene);
         stage.setTitle("Añadir Tutoría");
         //stage.setResizable(false);
-        tutoriaController.setDate(c.getDate());
+        DayOfWeek day = DayOfWeek.from(c.getDate());
+        if(day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY){
+            tutoriaController.setDate(c.getDate().plusDays(8 - day.getValue()));
+        }else{
+            tutoriaController.setDate(c.getDate());
+        }
+        
         //if(launchTutFromWeekPane){
         tutoriaController.setDates(inicio, fin,eventSource,source);
         //}
@@ -294,6 +316,12 @@ AnchorPane.setRightAnchor(calendarNode, 0d);
                 l.setMaxSize(MAX_VALUE, MAX_VALUE);
                 days.add(l,i,0);
             }
+            
+            if(i == 6 || i == 7){
+                l.setDisable(true);
+                l.setOpacity(1);
+                l.setStyle("-fx-background-color: gainsboro;");
+            }
         }
         Button l;
         if(m2 == 0){
@@ -334,7 +362,13 @@ AnchorPane.setRightAnchor(calendarNode, 0d);
         int diaColumna = 1;
         week = new Week(diaColumna,true);
         week.init();
-        week.setDay(c.getDate());
+        
+        DayOfWeek day = DayOfWeek.from(c.getDate());
+        if(day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY){
+            week.setDay(c.getDate().plusDays(8 - day.getValue()));
+        }else{
+            week.setDay(c.getDate());
+        }
         
         GridPane days = new GridPane();
         days.setGridLinesVisible(true);
@@ -391,6 +425,29 @@ AnchorPane.setRightAnchor(calendarNode, 0d);
         this.fin = fin;
         this.eventSource = eventSouce;
         this.source = source;
-        launchTutFromWeekPane = true;
+    }
+    
+    public void reloadAlumnosYAsignaturas() {
+        filtroAsignaturas.getChildren().remove(0,filtroAsignaturas.getChildren().size());
+        
+        asignaturas = AccesoBD.getInstance().getTutorias().getAsignaturas();
+        for(Asignatura a:asignaturas){
+            CheckBox c = new CheckBox(a.getCodigo());
+            c.setTooltip(new Tooltip(a.getDescripcion()));
+            filtroAsignaturas.getChildren().add(c);
+        }
+    }
+}
+class Celda extends ListCell<Alumno> {
+    
+    @Override
+    protected void updateItem(Alumno item, boolean empty) {
+        super.updateItem(item, empty);
+        if (item == null || empty) {
+            setText(null);
+        } else {
+            setText(item.getApellidos() + ", " + item.getNombre());
+            setStyle("-fx-background-color:lightgrey;");
+        }
     }
 }

@@ -5,6 +5,8 @@
  */
 package añadir;
 
+import accesoBD.AccesoBD;
+import ipc.Main;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -13,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import modelo.Asignatura;
 
 /**
  * FXML Controller class
@@ -22,37 +25,47 @@ import javafx.stage.Stage;
 public class FXMLAsignaturaController implements Initializable {
 
     @FXML
-    private TextField asignatura;
+    private TextField asignaturaField;
     @FXML
     private TextField abreviatura;
     @FXML
     private Button addAsignatura;
 
-    /**
-     * Initializes the controller class.
-     */
+    private Asignatura asignatura = null;
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-        addAsignatura.disableProperty().bind(asignatura.textProperty().isEmpty().or(abreviatura.textProperty().isEmpty()));
+        addAsignatura.disableProperty().bind(asignaturaField.textProperty().isEmpty().or(abreviatura.textProperty().isEmpty()));
     }    
 
     @FXML
     private void addAsignatura(ActionEvent event) {
-        if ((!asignatura.getText().isEmpty())
-                && (asignatura.getText().trim().length() != 0)
+        if ((!asignaturaField.getText().isEmpty())
+                && (asignaturaField.getText().trim().length() != 0)
                 && (!abreviatura.getText().isEmpty())
                 && (abreviatura.getText().trim().length() != 0)) {
-            asignatura.clear();
+            
+            asignatura = new Asignatura();
+            asignatura.setCodigo(abreviatura.getText().trim());
+            asignatura.setDescripcion(asignaturaField.getText().trim());
+            
+            save();
+            
+            asignaturaField.clear();
             abreviatura.clear();
-            asignatura.requestFocus();
-            ((Stage)asignatura.getScene().getWindow()).close();
+            asignaturaField.requestFocus();
+            ((Stage)asignaturaField.getScene().getWindow()).close();
         } 
     }
 
     @FXML
     private void cancelar(ActionEvent event) {
-        ((Stage)asignatura.getScene().getWindow()).close();
+        ((Stage)asignaturaField.getScene().getWindow()).close();
     }
-    
+    public void save(){
+        AccesoBD.getInstance().getTutorias().getAsignaturas().add(asignatura);
+        AccesoBD.getInstance().salvar();
+        Main.getMainController().reloadAlumnosYAsignaturas();
+    }
 }
