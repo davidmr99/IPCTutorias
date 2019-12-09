@@ -7,23 +7,34 @@ package añadir;
 
 import Configuracion.FXMLConfiguracionController;
 import accesoBD.AccesoBD;
+import ipc.Main;
 import ipc.main.contextPane.Calendar;
 import ipc.main.weekView.Week;
 import java.io.IOException;
 import static java.lang.Integer.MAX_VALUE;
 import java.net.URL;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalUnit;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -33,6 +44,7 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -45,6 +57,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelo.Alumno;
 import modelo.Asignatura;
+import modelo.Tutoria;
 
 /**
  * FXML Controller class
@@ -87,6 +100,10 @@ public class FXMLTutoriaController implements Initializable {
     private ListView<Alumno> alumnosList;
     @FXML
     private ComboBox<Asignatura> asignaturasComboBox;
+    @FXML
+    private Button aceptar;
+    private Tutoria tutoria = null;
+    private Asignatura asignatura = null;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -114,41 +131,35 @@ public class FXMLTutoriaController implements Initializable {
         alumnosComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if(!alumnosElegidos.contains(newValue)){
                 alumnosElegidos.add(newValue);
-                    alumnosList.refresh();
-                    System.out.println("Click on "+newValue.getNombre());
-                    System.out.println("lista: "+ alumnosElegidos.toString());
+                alumnosList.refresh();
             }
         });
         
         alumnosList.setItems(alumnosElegidos);
-        alumnosList.setCellFactory(lv -> {
-            ListCell<Alumno> cell = new ListCell<Alumno>() {
-                @Override
-                protected void updateItem(Alumno item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (item == null || empty) {
-                        setText(null);
-                    } else {
-                        Image img = new Image("/ipc/resources/cancel-icon.png");
-                        ImageView imgView = new ImageView(img);
-                        imgView.setFitHeight(28);
-                        imgView.setFitWidth(28);
-                        HBox h = new HBox(new Label(item.getApellidos() + ", " + item.getNombre()+" "),imgView);
-                        setCursor(Cursor.HAND);
-                        setGraphic(h);
-                    }
-                }
-            };
-            cell.setOnMouseClicked(e -> {
-                if (! cell.isEmpty()) {
-                    System.out.println("Click on "+cell.getItem().getNombre());
-                    alumnosElegidos.remove(cell.getItem());
-                    alumnosList.refresh();
-                    System.out.println("lista: "+alumnosElegidos.toString());
-                }
-            });
-            return cell ;
+        alumnosList.setCellFactory(lv -> new ListCelda());
+        
+        alumnosList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            
+            @Override
+            public void handle(MouseEvent event) {
+                Alumno a = alumnosList.getSelectionModel().getSelectedItem();
+                alumnosElegidos.remove(a);
+            }
         });
+        
+        ObservableList<Asignatura> asignaturas = AccesoBD.getInstance().getTutorias().getAsignaturas();
+        asignaturasComboBox.setCellFactory(c-> new Celda());
+        asignaturasComboBox.setButtonCell(new ListCell<Asignatura>(){
+            @Override
+            protected void updateItem(Asignatura item, boolean btl){
+                super.updateItem(item, btl);
+                if(item != null) {
+                    setText(item.getCodigo());
+                    asignatura = item;
+                }
+            }
+        });
+        asignaturasComboBox.setItems(asignaturas);
         
         daysButton();
     }
@@ -303,6 +314,10 @@ c.getCalendar().setOnMouseClicked((event) -> {
         if(indexF < 12 * 6){
             week.drawButtonAndStuff(index0,indexF);
             timeLabel.setText("Duración: " + hInicio.getValue() + ":" + mInicio.getValue() + " - " + Week.getTime(indexF,true).getHour() + ":" + Week.getTime(indexF,true).getMinute());
+            
+            inicio = LocalDateTime.of(inicio.toLocalDate(), LocalTime.of(hInicio.getValue(), mInicio.getValue()));
+            fin = LocalDateTime.of(inicio.toLocalDate(), LocalTime.of(Week.getTime(indexF,true).getHour(), Week.getTime(indexF,true).getMinute()));
+                    
         }else {
             hInicio.getValueFactory().setValue(lastHInicioValue);
             mInicio.getValueFactory().setValue(lastMInicioValue);
@@ -333,6 +348,10 @@ c.getCalendar().setOnMouseClicked((event) -> {
         hInicio.getValueFactory().setValue(ld.getHour());
         mInicio.getValueFactory().setValue(ld.getMinute());
         duracion.getValueFactory().setValue(duration);
+        
+        inicio = ld;
+        fin = ld2;
+        
         timeLabel.setText("Duración: " + hInicio.getValue() + ":" + mInicio.getValue() + " - " + ld2.getHour() + ":" + ld2.getMinute());
     }
     
@@ -362,17 +381,113 @@ c.getCalendar().setOnMouseClicked((event) -> {
     public int getDuracionMins(LocalDateTime inicio,LocalDateTime fin){
         return (fin.getHour()-inicio.getHour()) * 60 + (fin.getMinute() - inicio.getMinute());
     }
+    
+    private void salvar(){
+        if ((!alumnosElegidos.isEmpty())
+                && (asignatura != null)
+                && (date != null)
+                && (inicio != null && fin != null)){
+            
+            if(descripcionField.getText().trim().isEmpty()){
+                Alert alert = new Alert(AlertType.WARNING);
+                alert.setTitle("Alerta");
+                alert.setHeaderText("No ha especificado ninguna anotación\n¿Quiere añadirlos ahora?");
+                
+                ButtonType si = new ButtonType("Si");
+                ButtonType no = new ButtonType("No");
+                alert.getButtonTypes().clear();
+                alert.getButtonTypes().addAll(si,no);
+                
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result == null || result.get() == si){
+                    return;
+                }
+            }else;
+            
+            tutoria = new Tutoria();
+            tutoria.getAlumnos().addAll(alumnosElegidos);
+            tutoria.setAsignatura(asignatura);
+            tutoria.setDuracion(Duration.between(inicio.toLocalTime(), fin.toLocalTime()));
+            tutoria.setFecha(date);
+            tutoria.setInicio(inicio.toLocalTime());
+            tutoria.setEstado(Tutoria.EstadoTutoria.PEDIDA);
+            if(!descripcionField.getText().trim().isEmpty()){
+                tutoria.setAnotaciones(descripcionField.getText().trim());
+            }
+            
+            System.out.println("creando tutoria el "+ date+" at "+inicio.toLocalTime()+" durando: "+Duration.between(inicio.toLocalTime(), fin.toLocalTime()).toMinutes());
+            
+            AccesoBD.getInstance().getTutorias().getTutoriasConcertadas().add(tutoria);
+            AccesoBD.getInstance().salvar();
+            ((Stage)aceptar.getScene().getWindow()).close();
+            
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Tutoría creada");
+            alert.setHeaderText("Se ha creado su tutoría con éxito");
+            alert.setContentText("Dia: "+date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+                    +"\nHora inicio: "+inicio.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
+                    +"\nHora fin: "+fin.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
+                    +"\nDuración: "+Duration.between(inicio.toLocalTime(), fin.toLocalTime()).toMinutes()+" m"
+                    +"\nAsignatura: "+asignatura.getDescripcion()+" ("+asignatura.getCodigo()+")");
+
+            alert.showAndWait();
+        }else{
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Rellene todos los campos obligatorios: ");
+            alert.setContentText("Alumnos\nAsignatura\nFecha\nHora de inicio\nDuración");
+            Main.getMainController().updateTutorias();
+            alert.showAndWait();
+        }
+    }
+
+    @FXML
+    private void aceptar(ActionEvent event) {
+        salvar();
+    }
+
+    @FXML
+    private void cancelar(ActionEvent event) {
+        ((Stage)aceptar.getScene().getWindow()).close();
+    }
 }
-class Celda extends ListCell<Alumno> {
+
+class Celda<E> extends ListCell<E> {
     
     @Override
-    protected void updateItem(Alumno item, boolean empty) {
+    protected void updateItem(E item, boolean empty) {
         super.updateItem(item, empty);
         if (item == null || empty) {
             setText(null);
         } else {
-            setText(item.getApellidos() + ", " + item.getNombre());
-            setStyle("-fx-background-color:lightgrey;");
+            if(item instanceof Alumno){
+                setText(((Alumno)item).getApellidos() + ", " + ((Alumno)item).getNombre());
+                setStyle("-fx-background-color:lightgrey;");
+            }else if(item instanceof Asignatura){
+                setText(((Asignatura)item).getCodigo());
+                setTooltip(new Tooltip(((Asignatura)item).getDescripcion()));
+                setStyle("-fx-background-color:lightgrey;");
+            }
+        }
+    }
+}
+class ListCelda extends ListCell<Alumno> {
+    @Override
+    protected void updateItem(Alumno item, boolean empty) {
+        super.updateItem(item, empty);
+        if (item == null || empty) {
+            setGraphic(null);
+            setText(null);
+        } else {
+            setGraphic(null);
+            setText(null);
+            Image img = new Image("/ipc/resources/cancel-icon.png");
+            ImageView imgView = new ImageView(img);
+            imgView.setFitHeight(28);
+            imgView.setFitWidth(28);
+            HBox h = new HBox(imgView,new Label(item.getApellidos() + ", " + item.getNombre()+" "));
+            setCursor(Cursor.HAND);
+            setGraphic(h);
         }
     }
 }

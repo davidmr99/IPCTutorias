@@ -15,6 +15,7 @@ import java.io.IOException;
 import static java.lang.Integer.MAX_VALUE;
 import java.net.URL;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
@@ -30,16 +31,21 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelo.Alumno;
@@ -91,11 +97,12 @@ public class FXMLMainController implements Initializable {
     private FXMLTutoriaController tutoriaController;
     private LocalDateTime inicio,fin;
     private int eventSource, source;
-    private ListView listView;
+    private TableView<Tutoria> tableView;
     private Node n;
     private SwitchButton btn;
     private ObservableList<Alumno> alumnos;
     private ObservableList<Asignatura> asignaturas;
+    private ObservableList<Tutoria> tutorias;
     
     public FXMLMainController(){
         
@@ -118,21 +125,21 @@ public class FXMLMainController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         btn = new SwitchButton();
         btn.setVisible(true);
-        listView = new ListView<Tutoria>();
-        AnchorPane.setTopAnchor(listView, 10d);
-        AnchorPane.setBottomAnchor(listView, 10d);
-        AnchorPane.setRightAnchor(listView, 10d);
-        AnchorPane.setLeftAnchor(listView, 10d);
+        tableView = new TableView</*Alumno*/>();
+        AnchorPane.setTopAnchor(tableView, 10d);
+        AnchorPane.setBottomAnchor(tableView, 10d);
+        AnchorPane.setRightAnchor(tableView, 10d);
+        AnchorPane.setLeftAnchor(tableView, 10d);
         
         btn.getButton().setOnMouseClicked((event) -> {
             if(btn.switchOnProperty().get()){
                 System.out.println("ON");
                 n = contextPane.getChildren().get(0);
                 contextPane.getChildren().remove(n);
-                contextPane.getChildren().add(listView);
+                contextPane.getChildren().add(tableView);
             }else{
                 System.out.println("OFF");
-                contextPane.getChildren().remove(listView);
+                contextPane.getChildren().remove(tableView);
                 contextPane.getChildren().add(n);
             }
         });
@@ -141,6 +148,7 @@ public class FXMLMainController implements Initializable {
         
         
         alumnos = AccesoBD.getInstance().getTutorias().getAlumnosTutorizados();
+        tutorias = AccesoBD.getInstance().getTutorias().getTutoriasConcertadas();
         comboBox.setCellFactory(c-> new Celda());
         comboBox.setButtonCell(new ListCell<Alumno>(){
             @Override
@@ -152,7 +160,27 @@ public class FXMLMainController implements Initializable {
             }
         });
         comboBox.setItems(alumnos);
+        tableView.setItems(tutorias);
+        
+        TableColumn<Tutoria, Tutoria.EstadoTutoria> estadoCol = new TableColumn<>("Estado");
+        TableColumn<Tutoria, String> asignaturaCol = new TableColumn<>("Asignatura");
+        TableColumn<Tutoria, String> fechaCol = new TableColumn<>("Fecha");
+        TableColumn<Tutoria, String> horaCol = new TableColumn<>("Hora Inicio");
+        TableColumn<Tutoria, Duration> duracionCol = new TableColumn<>("Duracion");
+        
+        estadoCol.setCellValueFactory(cellData -> cellData.getValue().estadoProperty());
+        asignaturaCol.setCellValueFactory(cellData -> cellData.getValue().getAsignatura().codigoProperty());
+        fechaCol.setCellValueFactory(cellData -> cellData.getValue().fechaProperty());
+        horaCol.setCellValueFactory(cellData -> cellData.getValue().inicioProperty());
+        duracionCol.setCellValueFactory(cellData -> cellData.getValue().duracionProperty());
+        
+        duracionCol.setCellFactory(c->new TutoriaDuracionCelda());
+        estadoCol.setCellFactory(c->new TutoriaEstadoCelda());
+        
+        tableView.getColumns().addAll(estadoCol,asignaturaCol, fechaCol,horaCol,duracionCol);
+        
         reloadAlumnosYAsignaturas();
+        updateTutorias();
         
         scrollSubjects.maxHeightProperty().bind(filtroAsignaturas.heightProperty().add(20));
         scrollSubjects.setFitToHeight(true);
@@ -161,26 +189,23 @@ public class FXMLMainController implements Initializable {
         scrollSubjects.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollSubjects.disableProperty().bind(selectAllSubjects.selectedProperty());
         
-        //configBtn.getParent().getStylesheets().add(styleSheet);
-        
         mesesBtn.setId("monthBtn");
         semanasBtn.setId("weekBtn");
         diasBtn.setId("dayBtn");
         
         
         calendarMenuVBox.visibleProperty().bind(btn.switchOnProperty().not());
-//        contextPane.visibleProperty().bind(btn.switchOnProperty().not());
-listView.visibleProperty().bind(btn.switchOnProperty());
+        tableView.visibleProperty().bind(btn.switchOnProperty());
 
-c = new Calendar(true);
-calendarNode = c.getCalendar();
-calendarNode.visibleProperty().bind(btn.switchOnProperty().not());
+        c = new Calendar(true);
+        calendarNode = c.getCalendar();
+        calendarNode.visibleProperty().bind(btn.switchOnProperty().not());
 
-contextPane.getChildren().add(calendarNode);
-AnchorPane.setTopAnchor(calendarNode, 0d);
-AnchorPane.setLeftAnchor(calendarNode, 0d);
-AnchorPane.setBottomAnchor(calendarNode, 0d);
-AnchorPane.setRightAnchor(calendarNode, 0d);
+        contextPane.getChildren().add(calendarNode);
+        AnchorPane.setTopAnchor(calendarNode, 0d);
+        AnchorPane.setLeftAnchor(calendarNode, 0d);
+        AnchorPane.setBottomAnchor(calendarNode, 0d);
+        AnchorPane.setRightAnchor(calendarNode, 0d);
 
 //PARA VER TODAS LAS SUBCLASES DE LOS NODOS
 //        for (Node node : calendarNode.lookupAll("*")) {
@@ -437,6 +462,10 @@ AnchorPane.setRightAnchor(calendarNode, 0d);
             filtroAsignaturas.getChildren().add(c);
         }
     }
+
+    public void updateTutorias() {
+        
+    }
 }
 class Celda extends ListCell<Alumno> {
     
@@ -448,6 +477,38 @@ class Celda extends ListCell<Alumno> {
         } else {
             setText(item.getApellidos() + ", " + item.getNombre());
             setStyle("-fx-background-color:lightgrey;");
+        }
+    }
+}
+class TutoriaDuracionCelda extends TableCell<Tutoria,Duration> {
+    
+    @Override
+    protected void updateItem(Duration item, boolean empty) {
+        super.updateItem(item, empty);
+        if (item == null || empty) {
+            setText(null);
+        } else {
+            long h = item.toHours();
+            long m = item.toMinutes()%60;
+            setText(h+" h "+m+" m");
+        }
+    }
+}
+        
+class TutoriaEstadoCelda extends TableCell<Tutoria,Tutoria.EstadoTutoria> {
+    
+    @Override
+    protected void updateItem(Tutoria.EstadoTutoria item, boolean empty) {
+        super.updateItem(item, empty);
+        if (item == null || empty) {
+            setText(null);
+        } else {
+            
+//            setText(item.name());
+            Circle c = new Circle(10,new Color(0,1,0,1));
+            Text t = new Text(item.value());
+            HBox h = new HBox(c,t);
+            setGraphic(h);
         }
     }
 }
