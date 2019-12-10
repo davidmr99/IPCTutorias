@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.SplitPane?>
@@ -9,11 +10,9 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-
-<SplitPane dividerPositions="0.2" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ipc.main.viewTutoria.FXMLVerTutoriaController">
+<SplitPane dividerPositions="0.3" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="324.0" prefWidth="681.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <items>
       <BorderPane SplitPane.resizableWithParent="false">
          <top>
@@ -28,14 +27,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
          <bottom>
-            <Label fx:id="estado" text="Estado" BorderPane.alignment="CENTER">
-               <graphic>
-                  <Circle fx:id="estadoCirculo" fill="DODGERBLUE" radius="10.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.5" />
-               </graphic>
-               <BorderPane.margin>
-                  <Insets top="10.0" />
-               </BorderPane.margin>
-            </Label>
+            <ComboBox fx:id="estadoComboBox" prefWidth="150.0" visibleRowCount="4" BorderPane.alignment="CENTER" />
          </bottom>
       </BorderPane>
       <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
@@ -46,7 +38,7 @@
                </font>
             </Label>
             <Label fx:id="fecha" text="Fecha" />
-            <TextArea fx:id="textArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
+            <TextArea fx:id="textArea" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
             <HBox alignment="CENTER">
                <children>
                   <Button mnemonicParsing="false" onAction="#accept" text="Aceptar" />

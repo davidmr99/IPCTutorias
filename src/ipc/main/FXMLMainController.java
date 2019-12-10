@@ -10,6 +10,7 @@ import añadir.FXMLAlumnoController;
 import añadir.FXMLAsignaturaController;
 import añadir.FXMLTutoriaController;
 import ipc.main.contextPane.Calendar;
+import ipc.main.viewTutoria.FXMLVerTutoriaController;
 import ipc.main.weekView.Week;
 import java.io.IOException;
 import static java.lang.Integer.MAX_VALUE;
@@ -19,6 +20,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -36,6 +39,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
@@ -161,6 +165,20 @@ public class FXMLMainController implements Initializable {
         });
         comboBox.setItems(alumnos);
         tableView.setItems(tutorias);
+        tableView.setRowFactory( tv -> {
+            TableRow<Tutoria> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                    try {
+                        Tutoria tutoria = row.getItem();
+                        viewTutoria(tutoria);
+                    } catch (IOException ex) {
+                        Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+            return row;
+        });
         
         TableColumn<Tutoria, Tutoria.EstadoTutoria> estadoCol = new TableColumn<>("Estado");
         TableColumn<Tutoria, String> asignaturaCol = new TableColumn<>("Asignatura");
@@ -196,17 +214,17 @@ public class FXMLMainController implements Initializable {
         
         calendarMenuVBox.visibleProperty().bind(btn.switchOnProperty().not());
         tableView.visibleProperty().bind(btn.switchOnProperty());
-
+        
         c = new Calendar(true);
         calendarNode = c.getCalendar();
         calendarNode.visibleProperty().bind(btn.switchOnProperty().not());
-
+        
         contextPane.getChildren().add(calendarNode);
         AnchorPane.setTopAnchor(calendarNode, 0d);
         AnchorPane.setLeftAnchor(calendarNode, 0d);
         AnchorPane.setBottomAnchor(calendarNode, 0d);
         AnchorPane.setRightAnchor(calendarNode, 0d);
-
+        
 //PARA VER TODAS LAS SUBCLASES DE LOS NODOS
 //        for (Node node : calendarNode.lookupAll("*")) {
 //            System.out.println("\t" + node);
@@ -264,19 +282,13 @@ public class FXMLMainController implements Initializable {
         Stage stage = new Stage();
         FXMLLoader miLoader = new FXMLLoader(getClass().getResource("/añadir/FXMLAlumno.fxml"));
         Parent root = miLoader.load();
-        //        Parent root = FXMLLoader.load(getClass().getResource("/vista/FXMLpersona.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Añadir alumno");
         stage.initModality(Modality.APPLICATION_MODAL);
         FXMLAlumnoController controller = miLoader.getController();
-        //        miLoader.setController(controller);
-        //        miLoader.setRoot(root);//        controller.initStage(stage);
         stage.setResizable(false);
         stage.showAndWait();
-        //        if (controller.hayPersona()) {
-        //            datos.add(controller.getPersona());
-        //        }
     }
     
     @FXML
@@ -284,19 +296,13 @@ public class FXMLMainController implements Initializable {
         Stage stage = new Stage();
         FXMLLoader miLoader = new FXMLLoader(getClass().getResource("/añadir/FXMLAsignatura.fxml"));
         Parent root = miLoader.load();
-        //        Parent root = FXMLLoader.load(getClass().getResource("/vista/FXMLpersona.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Añadir asignatura");
         stage.initModality(Modality.APPLICATION_MODAL);
         FXMLAsignaturaController controller = miLoader.getController();
-        //        miLoader.setController(controller);
-        //        miLoader.setRoot(root);//        controller.initStage(stage);
         stage.setResizable(false);
         stage.showAndWait();
-        //        if (controller.hayPersona()) {
-        //            datos.add(controller.getPersona());
-        //        }
     }
     
     private void weeksButton() {
@@ -462,10 +468,30 @@ public class FXMLMainController implements Initializable {
             filtroAsignaturas.getChildren().add(c);
         }
     }
-
+    
     public void updateTutorias() {
         
     }
+    
+    public void viewTutoria(Tutoria tutoria) throws IOException{
+        Stage stage = new Stage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ipc/main/viewTutoria/FXMLVerTutoria.fxml"));
+        FXMLVerTutoriaController controller = new FXMLVerTutoriaController();
+        loader.setController(controller);
+        controller.setTutoria(tutoria);
+        
+        Parent root = loader.load();
+        
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("Ver Tutoría");
+        
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.show();
+        stage.setMinWidth(stage.getWidth());
+        stage.setMinHeight(stage.getHeight());
+    }
+    
 }
 class Celda extends ListCell<Alumno> {
     
@@ -494,7 +520,7 @@ class TutoriaDuracionCelda extends TableCell<Tutoria,Duration> {
         }
     }
 }
-        
+
 class TutoriaEstadoCelda extends TableCell<Tutoria,Tutoria.EstadoTutoria> {
     
     @Override
@@ -503,11 +529,22 @@ class TutoriaEstadoCelda extends TableCell<Tutoria,Tutoria.EstadoTutoria> {
         if (item == null || empty) {
             setText(null);
         } else {
+            Color c = new Color(1,1,1,1);
+            if(item.value().equals(Tutoria.EstadoTutoria.PEDIDA.value())){
+                c = new Color(0.4706, 0.9686, 0.3686,1);
+            }else if(item.value().equals(Tutoria.EstadoTutoria.ANULADA.value())){
+                c = new Color(1, 0, 0, 1);
+            }else if(item.value().equals(Tutoria.EstadoTutoria.REALIZADA.value())){
+                c = new Color(0.2784, 0.8549, 1,1);
+            }else if(item.value().equals(Tutoria.EstadoTutoria.NO_ASISTIDA.value())){
+                c = new Color(1, 0.7686, 0,1);
+            }
             
-//            setText(item.name());
-            Circle c = new Circle(10,new Color(0,1,0,1));
+            Circle state = new Circle(10,c);
+            
             Text t = new Text(item.value());
-            HBox h = new HBox(c,t);
+            HBox h = new HBox(state,t);
+            h.setSpacing(5);
             setGraphic(h);
         }
     }
