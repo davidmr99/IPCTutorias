@@ -6,6 +6,7 @@
 package ipc.main.viewTutoria;
 
 import accesoBD.AccesoBD;
+import ipc.Main;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -118,6 +119,13 @@ public class FXMLVerTutoriaController implements Initializable {
                     }
                     AccesoBD.getInstance().getTutorias().getTutoriasConcertadas().get(i).setEstado(newValue);
                     AccesoBD.getInstance().salvar();
+                    
+                    Main.getMainController().getCalendar().getDatePicker().getDayCellFactory().call(Main.getMainController().getCalendar().getDatePicker());
+        
+                    Main.getMainController().getTutoriaController().getCalendar().getDatePicker().getDayCellFactory().call(Main.getMainController().getTutoriaController().getCalendar().getDatePicker());
+
+                    Main.getMainController().getWeek().drawTutorias();
+                    Main.getMainController().getTutoriaController().getWeek().drawTutorias();
                 }
             }
             fromInside = false;

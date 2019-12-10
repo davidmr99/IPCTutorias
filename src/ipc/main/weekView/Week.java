@@ -5,17 +5,22 @@
 */
 package ipc.main.weekView;
 
+import accesoBD.AccesoBD;
 import ipc.main.configuracion.FXMLConfiguracionController;
 import ipc.Main;
-import ipc.main.FXMLMainController;
+import java.io.IOException;
 import static java.lang.Integer.MAX_VALUE;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
+import java.time.LocalTime;
 import java.time.Year;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
@@ -24,16 +29,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.PickResult;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import modelo.Tutoria;
+import myLibrary.TutoriaBtn;
 
 /**
  *
@@ -50,6 +57,7 @@ public class Week extends GridPane{
     private LocalDate[] daysArray;
     private int year, week;
     private boolean fromMainWindow;
+    private ObservableList<Tutoria> tutorias;
     
     public Week(int days,boolean fromMainWindow){
         this.days = days + 1;
@@ -98,6 +106,7 @@ public class Week extends GridPane{
             daysArray[i] = LocalDate.ofYearDay(year, firstDayOfWeek).plusDays(i);
         }
         System.out.println("Week "+week +": "+daysArray[0]+" - "+ daysArray[6]);
+        drawTutorias();
     }
     
     public void setDay(LocalDate day){
@@ -105,6 +114,7 @@ public class Week extends GridPane{
         week = (day.getDayOfYear()/7)+1;
         daysArray = new LocalDate[1];
         daysArray[0] = day;
+        drawTutorias();
     }
     
     public void init(){
@@ -156,12 +166,14 @@ public class Week extends GridPane{
         Pane src = null;
         System.out.println("indexes: " + evtSrcRow+"    "+srcRow);
         for(Node n:getChildren()){
-            if(getColumnIndex(n) == 1){
-                if(getRowIndex(n) == evtSrcRow){
-                    evtSrc = (Pane)n;
-                }
-                if(getRowIndex(n) == srcRow){
-                    src = (Pane)n;
+            if(n instanceof Pane){    
+                if(getColumnIndex(n) == 1){
+                    if(getRowIndex(n) == evtSrcRow){
+                        evtSrc = (Pane)n;
+                    }
+                    if(getRowIndex(n) == srcRow){
+                        src = (Pane)n;
+                    }
                 }
             }
         }
@@ -391,7 +403,129 @@ public class Week extends GridPane{
         return (ldt.getHour()-8) * 6 + (ldt.getMinute()/10) + n;
     }
     
+    public static int getIndex(LocalTime ldt,boolean isFinal){
+        int n=0;
+        if(isFinal){
+            n=-1;
+        }
+        return (ldt.getHour()-8) * 6 + (ldt.getMinute()/10) + n;
+    }
+    
     public LocalDate[] getDays(){
         return daysArray;
+    }
+    
+    //PONER SIEMPRE DESPUES DEL SETWEEKDAYS O SETDAY
+    public void drawTutorias(){
+        tutorias = FXCollections.observableArrayList();
+        
+        for(LocalDate ld : daysArray){
+            for(Tutoria tut : AccesoBD.getInstance().getTutorias().getTutoriasConcertadas()){
+                if(tut.getFecha().getYear() == ld.getYear() && tut.getFecha().getMonthValue() == ld.getMonthValue() && tut.getFecha().getDayOfMonth() == ld.getDayOfMonth()){
+                    tutorias.add(tut);
+                }
+            }
+        }
+        
+        TutoriaBtn[] tuts = new TutoriaBtn[tutorias.size()];
+        Tutoria.EstadoTutoria[] states = Tutoria.EstadoTutoria.values();
+        
+        Color[] col = {new Color(0.4706, 0.9686, 0.3686,1),new Color(1, 0, 0, 1),new Color(0.2784, 0.8549, 1,1),new Color(1, 0.7686, 0,1)};
+        if(daysArray.length == 1){
+            for(int i=0;i<tuts.length;i++){
+                tuts[i] = new TutoriaBtn(tutorias.get(i));
+                tuts[i].getStyleClass().add("tutoriaBtn");
+
+                LocalTime time0 = tutorias.get(i).getInicio();
+                LocalTime timef = time0.plusMinutes(tutorias.get(i).getDuracion().toMinutes());
+
+                int hInicio = Week.getIndex(time0, false);
+                int hFin = Week.getIndex(timef, false);
+
+                add(tuts[i],1,hInicio,1,hFin-hInicio);
+
+                tuts[i].setPrefSize(tuts[i].getParent().getBoundsInLocal().getWidth(), tuts[i].getParent().getBoundsInLocal().getHeight());
+                tuts[i].setMinSize(((Control)getChildren().get(i)).getWidth(), ((Control)getChildren().get(i)).getHeight());
+
+
+                Text text = new Text(time0.getHour() + ":" + time0.getMinute() + " - " + timef.getHour() + ":" + timef.getMinute());
+                //tuts[i].setGraphic(text);
+                tuts[i].prefWidthProperty().bind(((Pane)tuts[i].getParent()).widthProperty());
+                tuts[i].prefHeightProperty().bind(((Pane)tuts[i].getParent()).heightProperty());
+                
+                Color color = new Color(1,1,1,1);
+                
+                for(int j=0;j<states.length;j++){
+                    if(states[j].equals(tutorias.get(i).getEstado())){
+                        color = col[j];
+                    }
+                }
+                
+                tuts[i].setAlignment(Pos.BOTTOM_LEFT);
+                
+                HBox hb = new HBox(new Circle(10,color),new Text(tutorias.get(i).getAsignatura().getCodigo()),text);
+                hb.setSpacing(10);
+                tuts[i].setGraphic(hb);
+                
+                tuts[i].setOnMouseClicked((MouseEvent t1) -> {
+                    try {
+                        Main.getMainController().viewTutoria(((TutoriaBtn) t1.getSource()).getTutoria());
+                    }catch (IOException ex) {
+                        Logger.getLogger(Week.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+            }
+            
+        }else{
+            int k = 1;
+            for(LocalDate ld : daysArray){
+                for(int i = 0; i<tuts.length;i++){
+                    if(tutorias.get(i).getFecha().getYear() == ld.getYear() && tutorias.get(i).getFecha().getMonthValue()== ld.getMonthValue() && tutorias.get(i).getFecha().getDayOfMonth()== ld.getDayOfMonth()){
+                        tuts[i] = new TutoriaBtn(tutorias.get(i));
+                        tuts[i].getStyleClass().add("tutoriaBtn");
+
+                        LocalTime time0 = tutorias.get(i).getInicio();
+                        LocalTime timef = time0.plusMinutes(tutorias.get(i).getDuracion().toMinutes());
+
+                        int hInicio = Week.getIndex(time0, false);
+                        int hFin = Week.getIndex(timef, false);
+
+                        add(tuts[i],k,hInicio,1,hFin-hInicio);
+
+                        tuts[i].setPrefSize(tuts[i].getParent().getBoundsInLocal().getWidth(), tuts[i].getParent().getBoundsInLocal().getHeight());
+                        tuts[i].setMinSize(((Control)getChildren().get(i)).getWidth(), ((Control)getChildren().get(i)).getHeight());
+
+
+                        Text text = new Text(time0.getHour() + ":" + time0.getMinute() + " - " + timef.getHour() + ":" + timef.getMinute());
+                        //tuts[i].setGraphic(text);
+                        tuts[i].prefWidthProperty().bind(((Pane)tuts[i].getParent()).widthProperty());
+                        tuts[i].prefHeightProperty().bind(((Pane)tuts[i].getParent()).heightProperty());
+
+                        Color color = new Color(1,1,1,1);
+
+                        for(int j=0;j<states.length;j++){
+                            if(states[j].equals(tutorias.get(i).getEstado())){
+                                color = col[j];
+                            }
+                        }
+
+                        tuts[i].setAlignment(Pos.BOTTOM_LEFT);
+
+                        HBox hb = new HBox(new Circle(10,color),new Text(tutorias.get(i).getAsignatura().getCodigo()),text);
+                        hb.setSpacing(10);
+                        tuts[i].setGraphic(hb);
+
+                        tuts[i].setOnMouseClicked((MouseEvent t1) -> {
+                            try {
+                                Main.getMainController().viewTutoria(((TutoriaBtn) t1.getSource()).getTutoria());
+                            }catch (IOException ex) {
+                                Logger.getLogger(Week.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        });
+                    } 
+                }
+                k++;
+            }
+        }
     }
 }

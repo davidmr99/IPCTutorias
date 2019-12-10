@@ -318,7 +318,7 @@ c.getCalendar().setOnMouseClicked((event) -> {
             
             inicio = LocalDateTime.of(inicio.toLocalDate(), LocalTime.of(hInicio.getValue(), mInicio.getValue()));
             fin = LocalDateTime.of(inicio.toLocalDate(), LocalTime.of(Week.getTime(indexF,true).getHour(), Week.getTime(indexF,true).getMinute()));
-                    
+            
         }else {
             hInicio.getValueFactory().setValue(lastHInicioValue);
             mInicio.getValueFactory().setValue(lastMInicioValue);
@@ -389,49 +389,60 @@ c.getCalendar().setOnMouseClicked((event) -> {
                 && (date != null)
                 && (inicio != null && fin != null)){
             
-            if(descripcionField.getText().trim().isEmpty()){
-                Alert alert = new Alert(AlertType.WARNING);
-                alert.setTitle("Alerta");
-                alert.setHeaderText("No ha especificado ninguna anotación\n¿Quiere añadirlos ahora?");
-                ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image("ipc/resources/warning-icon.png"));
-                ButtonType si = new ButtonType("Si");
-                ButtonType no = new ButtonType("No");
-                alert.getButtonTypes().clear();
-                alert.getButtonTypes().addAll(si,no);
+            if(!seCortan(date,inicio,fin)){
+                if(descripcionField.getText().trim().isEmpty()){
+                    Alert alert = new Alert(AlertType.WARNING);
+                    alert.setTitle("Alerta");
+                    alert.setHeaderText("No ha especificado ninguna anotación\n¿Quiere añadirlos ahora?");
+                    ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image("ipc/resources/warning-icon.png"));
+                    ButtonType si = new ButtonType("Si");
+                    ButtonType no = new ButtonType("No");
+                    alert.getButtonTypes().clear();
+                    alert.getButtonTypes().addAll(si,no);
+                    
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result == null || result.get() == si){
+                        return;
+                    }
+                }else;
                 
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result == null || result.get() == si){
-                    return;
+                tutoria = new Tutoria();
+                tutoria.getAlumnos().addAll(alumnosElegidos);
+                tutoria.setAsignatura(asignatura);
+                tutoria.setDuracion(Duration.between(inicio.toLocalTime(), fin.toLocalTime()));
+                tutoria.setFecha(date);
+                tutoria.setInicio(inicio.toLocalTime());
+                tutoria.setEstado(Tutoria.EstadoTutoria.PEDIDA);
+                if(!descripcionField.getText().trim().isEmpty()){
+                    tutoria.setAnotaciones(descripcionField.getText().trim());
                 }
-            }else;
-            
-            tutoria = new Tutoria();
-            tutoria.getAlumnos().addAll(alumnosElegidos);
-            tutoria.setAsignatura(asignatura);
-            tutoria.setDuracion(Duration.between(inicio.toLocalTime(), fin.toLocalTime()));
-            tutoria.setFecha(date);
-            tutoria.setInicio(inicio.toLocalTime());
-            tutoria.setEstado(Tutoria.EstadoTutoria.PEDIDA);
-            if(!descripcionField.getText().trim().isEmpty()){
-                tutoria.setAnotaciones(descripcionField.getText().trim());
+                
+                System.out.println("creando tutoria el "+ date+" at "+inicio.toLocalTime()+" durando: "+Duration.between(inicio.toLocalTime(), fin.toLocalTime()).toMinutes());
+                
+                AccesoBD.getInstance().getTutorias().getTutoriasConcertadas().add(tutoria);
+                AccesoBD.getInstance().salvar();
+                ((Stage)aceptar.getScene().getWindow()).close();
+                
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Tutoría creada");
+                alert.setHeaderText("Se ha creado su tutoría con éxito");
+                alert.setContentText("Dia: "+date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+                        +"\nHora inicio: "+inicio.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
+                        +"\nHora fin: "+fin.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
+                        +"\nDuración: "+Duration.between(inicio.toLocalTime(), fin.toLocalTime()).toMinutes()+" m"
+                                +"\nAsignatura: "+asignatura.getDescripcion()+" ("+asignatura.getCodigo()+")");
+                
+                alert.showAndWait();
+                
+            }else{
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image("ipc/resources/error-icon.png"));
+                alert.setHeaderText("No pueden intercalarse dos o más tutorías");
+                alert.setContentText("Modifique la fecha, hora o duración de la tutoría actual para proceder");
+                Main.getMainController().updateTutorias();
+                alert.showAndWait();
             }
-            
-            System.out.println("creando tutoria el "+ date+" at "+inicio.toLocalTime()+" durando: "+Duration.between(inicio.toLocalTime(), fin.toLocalTime()).toMinutes());
-            
-            AccesoBD.getInstance().getTutorias().getTutoriasConcertadas().add(tutoria);
-            AccesoBD.getInstance().salvar();
-            ((Stage)aceptar.getScene().getWindow()).close();
-            
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Tutoría creada");
-            alert.setHeaderText("Se ha creado su tutoría con éxito");
-            alert.setContentText("Dia: "+date.format(DateTimeFormatter.ISO_LOCAL_DATE)
-                    +"\nHora inicio: "+inicio.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
-                    +"\nHora fin: "+fin.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME)
-                    +"\nDuración: "+Duration.between(inicio.toLocalTime(), fin.toLocalTime()).toMinutes()+" m"
-                    +"\nAsignatura: "+asignatura.getDescripcion()+" ("+asignatura.getCodigo()+")");
-
-            alert.showAndWait();
         }else{
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
@@ -441,16 +452,49 @@ c.getCalendar().setOnMouseClicked((event) -> {
             Main.getMainController().updateTutorias();
             alert.showAndWait();
         }
+        Main.getMainController().getCalendar().getDatePicker().getDayCellFactory().call(Main.getMainController().getCalendar().getDatePicker());
+        
+        Main.getMainController().getCalendar().getDatePicker().getDayCellFactory().call(c.getDatePicker());
+        
+        week.drawTutorias();
     }
-
+    
+    public Calendar getCalendar(){
+        return c;
+    }
+    
+    public Week getWeek(){
+        return week;
+    }
+    
     @FXML
     private void aceptar(ActionEvent event) {
         salvar();
     }
-
+    
     @FXML
     private void cancelar(ActionEvent event) {
         ((Stage)aceptar.getScene().getWindow()).close();
+    }
+
+    private boolean seCortan(LocalDate date, LocalDateTime inicio, LocalDateTime fin) {
+        LocalTime l0 = inicio.toLocalTime();
+        LocalTime lf = fin.toLocalTime();
+        System.out.println("L0: "+l0+" fin: "+ lf+ " dia: "+ date);
+        System.out.println("Total tutorias: "+AccesoBD.getInstance().getTutorias().getTutoriasConcertadas().size());
+        for(Tutoria t : AccesoBD.getInstance().getTutorias().getTutoriasConcertadas()){
+            System.out.println("---TUTORIA T0: "+t.getInicio()+" fin: "+ t.getInicio().plusMinutes(t.getDuracion().toMinutes())+ " dia: "+ t.getFecha());
+            if(t.getFecha().getYear() == date.getYear() && t.getFecha().getMonthValue() == date.getMonthValue() && t.getFecha().getDayOfMonth() == date.getDayOfMonth()){
+                if(t.getInicio().isAfter(l0) && t.getInicio().isBefore(lf)){
+                    return true;
+                }else if(t.getInicio().plusMinutes(t.getDuracion().toMinutes()).isAfter(l0) && t.getInicio().plusMinutes(t.getDuracion().toMinutes()).isBefore(lf)){
+                    return true;
+                }else if(t.getInicio().isBefore(l0) && t.getInicio().plusMinutes(t.getDuracion().toMinutes()).isAfter(lf)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
 

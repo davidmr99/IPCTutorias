@@ -135,3 +135,9 @@ and open the template in the editor.
 .textArea:hover {
     -fx-cursor: hand;
 }
+
+.vacaciones {
+    -fx-background-color:gold;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+}

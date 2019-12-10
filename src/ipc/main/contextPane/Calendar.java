@@ -5,23 +5,25 @@
 */
 package ipc.main.contextPane;
 
-import añadir.FXMLTutoriaController;
+import accesoBD.AccesoBD;
 import com.sun.javafx.scene.control.skin.DatePickerSkin;
 import ipc.Main;
+import ipc.main.FXMLMainController;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.Random;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import modelo.Tutoria;
 
 /**
  *
@@ -55,6 +57,7 @@ public class Calendar{
                         }
                         
                         setupCustomTooltipBehavior(0, Integer.MAX_VALUE, 0);
+                        
                         setOnMouseClicked((event) -> {
                             calendar.setValue(item);
                             if(fromMainWindow){
@@ -100,6 +103,41 @@ public class Calendar{
 //                            setStyle("-fx-background-color: red; -fx-border-radius: 10px; -fx-background-radius: 10px;");
 //                            setTooltip(new Tooltip("Ya llegas un poco tarde no?"));
                         }
+                        if(FXMLMainController.getVacaciones().contains(item)){
+                            getStyleClass().add("vacaciones");
+                            setTooltip(new Tooltip("Vacaciones"));
+                        }
+                        boolean[] states = new boolean[Tutoria.EstadoTutoria.values().length];
+                        for(Tutoria tut:AccesoBD.getInstance().getTutorias().getTutoriasConcertadas()){
+                            if(tut.getFecha().equals(item)){
+                                for(int i= 0; i<Tutoria.EstadoTutoria.values().length;i++){
+                                    if(tut.getEstado().equals(Tutoria.EstadoTutoria.values()[i])){
+                                        states[i] = true;
+                                    }
+                                }
+                                //setStyle("-fx-background-color:brown;");
+                            }
+                        }
+                        HBox h = new HBox();
+                        Color[] col = {new Color(0.4706, 0.9686, 0.3686,1),new Color(1, 0, 0, 1),new Color(0.2784, 0.8549, 1,1),new Color(1, 0.7686, 0,1)};
+                        
+                        int spacing,size;
+                        
+                        if(fromMainWindow){
+                            spacing = 5;
+                            size = 10;
+                        }else{
+                            spacing = 2;
+                            size = 5;
+                        }
+                        
+                        h.setSpacing(spacing);
+                        for(int i=0;i<states.length;i++){
+                            if(states[i]){
+                                h.getChildren().add(new Circle(size,col[i]));
+                            }
+                        }
+                        setGraphic(h);
                     }
                 };
             }

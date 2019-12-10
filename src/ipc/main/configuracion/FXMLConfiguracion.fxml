@@ -8,13 +8,13 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ipc.main.configuracion.FXMLConfiguracionController">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="800.0" stylesheets="@../../../styles/Main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ipc.main.configuracion.FXMLConfiguracionController">
    <left>
       <VBox alignment="TOP_CENTER" spacing="20.0" BorderPane.alignment="CENTER">
          <padding>
@@ -35,32 +35,40 @@
                         <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="min." />
                      </children>
                   </HBox>
-                  <Button fx:id="enviar" disable="true" mnemonicParsing="false" text="Enviar" textAlignment="CENTER" />
+                  <Button fx:id="enviar" disable="true" mnemonicParsing="false" onAction="#save" text="Guardar" textAlignment="CENTER" />
                </children>
             </VBox>
-            <Separator prefHeight="46.0" prefWidth="248.0" />
-            <ListView editable="true" style="-fx-background-color: red;" />
+            <Label fx:id="timeExceded" layoutX="23.0" layoutY="20.0" text="Tiempo máximo de tutoria (12h) excedido)" textAlignment="CENTER" textFill="RED" visible="false">
+               <font>
+                  <Font size="12.0" />
+               </font>
+            </Label>
+            <Separator prefHeight="14.0" prefWidth="248.0" />
+            <Label layoutX="31.0" layoutY="162.0" text="Vacaciones" textAlignment="CENTER">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <ListView fx:id="vacacionesList" editable="true" />
          </children>
       </VBox>
    </left>
    <center>
       <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-               <children>
-                  <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="500.0" style="-fx-background-color: orange;" />
-               </children>
-            </HBox>
-            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+            <AnchorPane fx:id="calendarNode" prefHeight="250.0" prefWidth="250.0" />
+            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
                <children>
                   <TableView fx:id="tablaAlumnos">
                     <columns>
-                      <TableColumn fx:id="alumnos" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="200.0" text="Alumnos" />
+                      <TableColumn fx:id="alumnos" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="75.0" text="Alumnos" />
+                        <TableColumn fx:id="correos" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="75.0" text="Correos" />
                     </columns>
                   </TableView>
                   <TableView fx:id="tablaAsignaturas">
                     <columns>
-                      <TableColumn fx:id="asignaturas" prefWidth="75.0" text="Asignaturas" />
+                      <TableColumn fx:id="asignaturas" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="75.0" text="Asignaturas" />
+                        <TableColumn fx:id="codigo" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="75.0" text="Asignaturas" />
                     </columns>
                   </TableView>
                </children>

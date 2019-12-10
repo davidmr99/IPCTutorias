@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -112,6 +113,7 @@ public class FXMLMainController implements Initializable {
     private ObservableList<Alumno> alumnos;
     private ObservableList<Asignatura> asignaturas;
     private ObservableList<Tutoria> tutorias;
+    private static ObservableList<LocalDate> vacaciones;
     
     public FXMLMainController(){
         
@@ -132,6 +134,13 @@ public class FXMLMainController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+        vacaciones = FXCollections.observableArrayList();
+        vacaciones.add(LocalDate.of(2019, 12, 24));
+        vacaciones.add(LocalDate.of(2019, 12, 25));
+        vacaciones.add(LocalDate.of(2019, 12, 31));
+        
+        
         btn = new SwitchButton();
         btn.setVisible(true);
         tableView = new TableView</*Alumno*/>();
@@ -234,6 +243,10 @@ public class FXMLMainController implements Initializable {
 //        for (Node node : calendarNode.lookupAll("*")) {
 //            System.out.println("\t" + node);
 //        }
+    }
+    
+    public static ObservableList<LocalDate> getVacaciones(){
+        return vacaciones;
     }
     
     @FXML
@@ -405,7 +418,7 @@ public class FXMLMainController implements Initializable {
         DayOfWeek day = DayOfWeek.from(c.getDate());
         if(day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY){
             week.setDay(c.getDate().plusDays(8 - day.getValue()));
-        }else{
+        }else {
             week.setDay(c.getDate());
         }
         
@@ -529,6 +542,12 @@ public class FXMLMainController implements Initializable {
         stage.setMinHeight(stage.getHeight());
     }
     
+    public Calendar getCalendar(){
+        return c;
+    }
+    public Week getWeek(){
+        return week;
+    }
 }
 class Celda extends ListCell<Alumno> {
     
