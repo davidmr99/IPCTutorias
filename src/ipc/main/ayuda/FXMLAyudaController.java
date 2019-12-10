@@ -54,6 +54,7 @@ public class FXMLAyudaController implements Initializable {
         Parent root = (Parent)miLoader.load();
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.getIcons().add(new Image("ipc/resources/image-icon.jpg"));
         stage.initModality(Modality.APPLICATION_MODAL);
         FXMLImagenController controller = miLoader.getController();
         stage.setResizable(false);

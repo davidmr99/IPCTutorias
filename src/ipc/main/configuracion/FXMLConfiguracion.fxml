@@ -21,7 +21,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
          <children>
-            <Label text="Tiempo máximo por tutoria" textAlignment="CENTER">
+            <Label text="Tiempo máximo por tutoria" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font size="20.0" />
                </font></Label>
@@ -54,24 +54,31 @@
       </VBox>
    </left>
    <center>
-      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
+      <VBox spacing="10.0" BorderPane.alignment="CENTER">
          <children>
             <AnchorPane fx:id="calendarNode" prefHeight="250.0" prefWidth="250.0" />
-            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
+            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" VBox.vgrow="ALWAYS">
                <children>
-                  <TableView fx:id="tablaAlumnos">
+                  <TableView fx:id="tablaAlumnos" prefWidth="400.0">
                     <columns>
-                      <TableColumn fx:id="alumnos" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="75.0" text="Alumnos" />
-                        <TableColumn fx:id="correos" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="75.0" text="Correos" />
-                    </columns>
+                      <TableColumn fx:id="alumnos" maxWidth="75.0" minWidth="75.0" prefWidth="75.0" text="Nombre" />
+                        <TableColumn fx:id="apellidos" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" text="Apellidos" />
+                        <TableColumn fx:id="correos" maxWidth="175.0" minWidth="175.0" prefWidth="175.0" text="Correos" />
+                        </columns>
+                     <columnResizePolicy>
+                        <!--<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />-->
+                     </columnResizePolicy>
                   </TableView>
-                  <TableView fx:id="tablaAsignaturas">
+                  <TableView fx:id="tablaAsignaturas" prefWidth="350.0">
                     <columns>
-                      <TableColumn fx:id="asignaturas" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="75.0" text="Asignaturas" />
-                        <TableColumn fx:id="codigo" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="75.0" text="Asignaturas" />
+                      <TableColumn fx:id="codigo" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="COD" />
+                        <TableColumn fx:id="asignaturas" maxWidth="300.0" minWidth="300.0" prefWidth="300.0" text="Asignaturas" />
                     </columns>
-                  </TableView>
-               </children>
+                     <columnResizePolicy>
+                        <!--<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />-->
+                     </columnResizePolicy>
+                     </TableView>
+         </children>
             </HBox>
          </children>
          <padding>

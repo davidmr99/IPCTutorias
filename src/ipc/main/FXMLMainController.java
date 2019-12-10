@@ -6,10 +6,10 @@
 package ipc.main;
 
 import accesoBD.AccesoBD;
-import ipc.main.ayuda.FXMLAyudaController;
 import añadir.FXMLAlumnoController;
 import añadir.FXMLAsignaturaController;
 import añadir.FXMLTutoriaController;
+import ipc.main.ayuda.FXMLAyudaController;
 import ipc.main.configuracion.FXMLConfiguracionController;
 import ipc.main.contextPane.Calendar;
 import ipc.main.viewTutoria.FXMLVerTutoriaController;
@@ -114,6 +114,8 @@ public class FXMLMainController implements Initializable {
     private ObservableList<Asignatura> asignaturas;
     private ObservableList<Tutoria> tutorias;
     private static ObservableList<LocalDate> vacaciones;
+    private ObservableList<Asignatura> filtroAsignaturasList;
+    private Button selected;
     
     public FXMLMainController(){
         
@@ -134,7 +136,7 @@ public class FXMLMainController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+        selected = mesesBtn;
         vacaciones = FXCollections.observableArrayList();
         vacaciones.add(LocalDate.of(2019, 12, 24));
         vacaciones.add(LocalDate.of(2019, 12, 25));
@@ -181,6 +183,11 @@ public class FXMLMainController implements Initializable {
         tableView.setItems(tutorias);
         tableView.setRowFactory( tv -> {
             TableRow<Tutoria> row = new TableRow<>();
+            if(!row.isEmpty() && row.getItem() != null){
+                if(row.getItem().getFecha().isBefore(c.getDate())){
+                    row.setDisable(true);
+                }
+            }
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
                     try {
@@ -252,6 +259,7 @@ public class FXMLMainController implements Initializable {
     @FXML
     private void swapCalendarView(ActionEvent e) {
         if(e.getSource().equals(mesesBtn)) {
+            selected = mesesBtn;
             semanasBtn.setDisable(false);
             diasBtn.setDisable(false);
             mesesBtn.setDisable(true);
@@ -259,8 +267,10 @@ public class FXMLMainController implements Initializable {
             contextPane.getChildren().remove(sp);
             contextPane.getChildren().add(calendarNode);
         }else if(e.getSource().equals(semanasBtn)) {
+            selected = semanasBtn;
             weeksButton();
         }else if(e.getSource().equals(diasBtn)) {
+            selected = diasBtn;
             daysButton();
         }
     }
@@ -483,9 +493,17 @@ public class FXMLMainController implements Initializable {
         filtroAsignaturas.getChildren().remove(0,filtroAsignaturas.getChildren().size());
         
         asignaturas = AccesoBD.getInstance().getTutorias().getAsignaturas();
+        filtroAsignaturasList = FXCollections.observableArrayList();
         for(Asignatura a:asignaturas){
             CheckBox c = new CheckBox(a.getCodigo());
             c.setTooltip(new Tooltip(a.getDescripcion()));
+            c.setOnMouseClicked((event) -> {
+                if(c.isSelected()){
+                    filtroAsignaturasList.add(a);
+                }else {
+                    filtroAsignaturasList.remove(a);
+                }
+            });
             filtroAsignaturas.getChildren().add(c);
         }
     }
@@ -521,6 +539,10 @@ public class FXMLMainController implements Initializable {
     
     public void updateTutorias() {
         
+    }
+    
+    public Button getSelectedButton(){
+        return selected;
     }
     
     public void viewTutoria(Tutoria tutoria) throws IOException{

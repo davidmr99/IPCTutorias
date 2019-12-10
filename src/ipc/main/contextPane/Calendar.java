@@ -76,32 +76,8 @@ public class Calendar{
                             setDisable(true);
                            setStyle("-fx-background-color: gainsboro;");
                         }
-                        if(item.isAfter(LocalDate.now().minusWeeks(1)) && item.isBefore(LocalDate.now())) {
-//                            setStyle("-fx-background-color: green;");
-//                            VBox vBox = new VBox();
-//                            vBox.setSpacing(5);
-//                            vBox.setFillWidth(true);
-//
-//                            Random r = new Random();
-//                            int n = r.nextInt(s.length);
-//                            System.out.println("random: " + n);
-//                            for(int i = 0; i <= n; i++) {
-//                                Button b = new Button(s[i]);
-//                                b.setPrefSize(100, USE_PREF_SIZE);
-//                                //b.setPrefSize(USE_PREF_SIZE,USE_PREF_SIZE);
-//                                b.setStyle("-fx-background-color: " + color[i] + "; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-text-fill: black; -fx-font-weight: bold");
-//                                vBox.getChildren().add(b);
-//                            }
-//
-//                            Tooltip t = new Tooltip("Vas sobrao");
-//                            t.setGraphic(vBox);
-//                            setTooltip(t);
-                        }else if(item.isAfter(LocalDate.now().minusWeeks(2)) && item.isBefore(LocalDate.now().minusWeeks(1))) {
-//                            setStyle("-fx-background-color: orange; -fx-color: white; -fx-border-radius: 5px; -fx-background-radius: 10px;");
-//                            setTooltip(new Tooltip("Corrrre"));
-                        }else if(item.isAfter(LocalDate.now().minusWeeks(3).minusDays(3)) && item.isBefore(LocalDate.now().minusWeeks(2))) {
-//                            setStyle("-fx-background-color: red; -fx-border-radius: 10px; -fx-background-radius: 10px;");
-//                            setTooltip(new Tooltip("Ya llegas un poco tarde no?"));
+                        if(item.isBefore(LocalDate.now())) {
+                            setDisable(true);
                         }
                         if(FXMLMainController.getVacaciones().contains(item)){
                             getStyleClass().add("vacaciones");

@@ -421,6 +421,11 @@ c.getCalendar().setOnMouseClicked((event) -> {
                 
                 AccesoBD.getInstance().getTutorias().getTutoriasConcertadas().add(tutoria);
                 AccesoBD.getInstance().salvar();
+                Main.getMainController().semanasBtn.fire();
+                Main.getMainController().diasBtn.fire();
+                Main.getMainController().getCalendar().getDatePicker().setValue(date.plusDays(1));
+                Main.getMainController().getTutoriaController().getCalendar().getDatePicker().setValue(date.plusDays(1));
+                Main.getMainController().mesesBtn.fire();
                 ((Stage)aceptar.getScene().getWindow()).close();
                 
                 Alert alert = new Alert(AlertType.INFORMATION);

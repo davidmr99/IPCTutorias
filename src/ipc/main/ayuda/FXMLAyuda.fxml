@@ -16,14 +16,41 @@
         <tabs>
             <Tab text="Página principal">
                <content>
-                  <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" />
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <TextArea text="La página principal será la primera que se encuentre al entrar a nuestra aplicación. En ella podrá visualizar el calendario del mes actual con las tutorías realizadas o a realizar en el día que corresponda. Aparecen diferentes puntos de colores con los siguientes significados:&#10;- Verde: PEDIDA.&#10;- Azul: REALIZADA.&#10;- Naranja: NO ASISTIDA&#10;- Rojo: ANULADA.&#10;Hay dos tipos de vista de las tutorías, en forma de calendario y en forma de lista. &#10;- Calendario: Este aparece por defecto con la vista del mes, que se puede cambiar a semana o día mediante el menú que aparece en la parte inferior izquierda. También se puede acceder a la vista de día clickando encima del día deseado. &#10;- Lista: Para visualizar la lista de tutorías se debe clickar sobre el logo de la lista marcada en naranja en la parte superior izquierda. &#10;También se puede añadir tutorías y cambiar el estado de estas mediante la vista de calendario. Para añadir tutorías se puede arrastrar desde la hora de inicio hasta la de fin, y para cambiar el estado de las tutorías se realiza clickando sobre la tutoría a modificar y cambiar el estado en el menú situado en la parte inferior izquierda." wrapText="true" />
+                        <VBox alignment="CENTER" spacing="20.0">
+                           <children>
+                              <ImageView fx:id="configuracion1" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#sacarImagen" pickOnBounds="true" preserveRatio="true">
+                                 <effect>
+                                    <DropShadow />
+                                 </effect>
+                                 <image>
+                                    <Image url="@../../resources/Ayuda-Principal.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="configuracion2" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#sacarImagen" pickOnBounds="true" preserveRatio="true">
+                                 <effect>
+                                    <DropShadow />
+                                 </effect>
+                                 <image>
+                                    <Image url="@../../resources/Principal.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </HBox>
                </content>
             </Tab>
           <Tab text="Añadir tutoria">
                <content>
-                  <HBox alignment="CENTER">
+                  <HBox>
                      <children>
-                        <TextArea text="Para acceder a esta acción debe seleccionar la opción añadir en el menú y dentro de este la opción tutoría.&#10;- Debe elegir el/la alumn@ o alumn@s que asistirán a la tutoría en el menú situado a la izquierda de la parte superior de la pantalla. Puede quitar un alumno clickando sobre su nombre en la lista que se muestra. Este campo es obligatorio.&#10;- Debe elegir la asignatura en el menú situado a la izquierda de la parte media de la pantalla. Este campo es obligatorio.&#10;- Puede insertar detalles de la tutoría a realizar en el campo de detalles situado a la izquierda de la parte inferior de la pantalla. Cuando clickes encima se abrirá una nueva pantalla. Este campo es opcional.&#10;- Debe elegir la hora de inicio y la duración de la tutoria en la parte inferior de la pantalla. O también clickando sobre la hora de inicio y arrastrando hacia abajo en la vista del día actual. Este campo es obligatorio.&#10;El botón aceptar guarda la tutoria. Una vez clickado aparecen los datos de la tutoría guardada.&#10;En caso de faltar alguno de los campos obligatorios aparecerá un mensaje de error con los campos ausentes.&#10;El botón cancelar cierra la pantalla." wrapText="true" />
+                        <TextArea editable="false" text="Para acceder a esta acción debe seleccionar la opción añadir en el menú y dentro de este la opción tutoría.&#10;- Debe elegir el/la alumn@ o alumn@s que asistirán a la tutoría en el menú situado a la izquierda de la parte superior de la pantalla. Puede quitar un alumno clickando sobre su nombre en la lista que se muestra. Este campo es obligatorio.&#10;- Debe elegir la asignatura en el menú situado a la izquierda de la parte media de la pantalla. Este campo es obligatorio.&#10;- Puede insertar detalles de la tutoría a realizar en el campo de detalles situado a la izquierda de la parte inferior de la pantalla. Cuando clickes encima se abrirá una nueva pantalla. Este campo es opcional.&#10;- Debe elegir la hora de inicio y la duración de la tutoria en la parte inferior de la pantalla. O también clickando sobre la hora de inicio y arrastrando hacia abajo en la vista del día actual. Este campo es obligatorio.&#10;El botón aceptar guarda la tutoria. Una vez clickado aparecen los datos de la tutoría guardada.&#10;En caso de faltar alguno de los campos obligatorios aparecerá un mensaje de error con los campos ausentes.&#10;El botón cancelar cierra la pantalla." wrapText="true" />
                         <VBox alignment="CENTER" spacing="20.0">
                            <children>
                               <ImageView fx:id="tutoria1" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#sacarImagen" pickOnBounds="true" preserveRatio="true">
@@ -53,7 +80,7 @@
           </Tab>
           <Tab text="Añadir alumno">
                <content>
-                  <HBox alignment="CENTER">
+                  <HBox>
                      <children>
                         <TextArea editable="false" text="Para acceder a esta acción debe seleccionar la opción añadir en el menú y dentro de este la opción alumno.&#10;Debe rellenar todos los campos con los siguientes valores:&#10;- Nombre: Nombre del alumno.&#10;- Apellidos: Apellidos del alumno.&#10;- eMail: Correo eléctronico del alumno.&#10;El botón enviar se activará una vez estén todos los campos llenos.&#10;El botón cancelar cierra la pantalla." wrapText="true" />
                         <VBox alignment="CENTER" spacing="20.0">
@@ -87,7 +114,7 @@
                <content>
                   <HBox>
                      <children>
-                        <TextArea maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="Para acceder a esta acción debe seleccionar la opción añadir en el menú y dentro de este la opción asignatura.&#10;Debe rellenar todos los campos con los siguientes valores:&#10;- Asignatura: Nombre de la asignatura.&#10;- Abreviatura: Abreviatura de la asignatura.&#10;El botón enviar se activará una vez estén todos los campos llenos.&#10;El botón cancelar cierra la pantalla." wrapText="true" />
+                        <TextArea editable="false" text="Para acceder a esta acción debe seleccionar la opción añadir en el menú y dentro de este la opción asignatura.&#10;Debe rellenar todos los campos con los siguientes valores:&#10;- Asignatura: Nombre de la asignatura.&#10;- Abreviatura: Abreviatura de la asignatura.&#10;El botón enviar se activará una vez estén todos los campos llenos.&#10;El botón cancelar cierra la pantalla." wrapText="true" />
                         <VBox alignment="CENTER" spacing="20.0">
                            <children>
                               <ImageView fx:id="asignatura1" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#sacarImagen" pickOnBounds="true" preserveRatio="true">
@@ -117,7 +144,34 @@
             </Tab>
             <Tab text="Configuración">
                <content>
-                  <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" />
+                  <HBox>
+                     <children>
+                        <TextArea editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="Para acceder a esta acción debe seleccionar la opción configuración en el menú y dentro de este la opción configuración. En esta pantalla puede realizar las siguientes acciones:&#10;- Establecer la duración máxima de las tutorias con horas y minutos, que se almacenará clickando en el botón &quot;Guardar&quot;. En caso de superar las 12 horas de duración el botón guardar se deshabilitará, pues supera la jornada laboral del profesor.&#10;- Establecer los días de vacaciones o los días que no pueda realizar tutorías clickando encima del día en el calendario establecido en la parte superior derecha. En la parte inferior izquierda aparecerá un listado con estos días.&#10;En esta ventana también aparecerán los listados de alumnos tutorizados y de asignaturas." wrapText="true" />
+                        <VBox alignment="CENTER" spacing="20.0">
+                           <children>
+                              <ImageView fx:id="configuracion1" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#sacarImagen" pickOnBounds="true" preserveRatio="true">
+                                 <effect>
+                                    <DropShadow />
+                                 </effect>
+                                 <image>
+                                    <Image url="@../../resources/Ayuda-Configuracion.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="configuracion2" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#sacarImagen" pickOnBounds="true" preserveRatio="true">
+                                 <effect>
+                                    <DropShadow />
+                                 </effect>
+                                 <image>
+                                    <Image url="@../../resources/Configuracion.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </HBox>
                </content>
             </Tab>
         </tabs>

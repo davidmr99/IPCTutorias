@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ipc.main.ayuda.FXMLImagenController">
    <children>
-      <ImageView fx:id="vista" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <ImageView fx:id="vista" fitHeight="400.0" fitWidth="500.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <viewport>
+            <Rectangle2D />
+         </viewport></ImageView>
    </children>
 </AnchorPane>
