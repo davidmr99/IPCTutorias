@@ -6,9 +6,11 @@
 package ipc.main;
 
 import accesoBD.AccesoBD;
+import ipc.main.ayuda.FXMLAyudaController;
 import añadir.FXMLAlumnoController;
 import añadir.FXMLAsignaturaController;
 import añadir.FXMLTutoriaController;
+import ipc.main.configuracion.FXMLConfiguracionController;
 import ipc.main.contextPane.Calendar;
 import ipc.main.viewTutoria.FXMLVerTutoriaController;
 import ipc.main.weekView.Week;
@@ -34,6 +36,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
@@ -42,6 +46,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -260,6 +265,7 @@ public class FXMLMainController implements Initializable {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Añadir Tutoría");
+        stage.getIcons().add(new Image("ipc/resources/add-icon.png"));
         //stage.setResizable(false);
         DayOfWeek day = DayOfWeek.from(c.getDate());
         if(day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY){
@@ -285,6 +291,7 @@ public class FXMLMainController implements Initializable {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Añadir alumno");
+        stage.getIcons().add(new Image("ipc/resources/add-icon.png"));
         stage.initModality(Modality.APPLICATION_MODAL);
         FXMLAlumnoController controller = miLoader.getController();
         stage.setResizable(false);
@@ -299,6 +306,7 @@ public class FXMLMainController implements Initializable {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Añadir asignatura");
+        stage.getIcons().add(new Image("ipc/resources/add-icon.png"));
         stage.initModality(Modality.APPLICATION_MODAL);
         FXMLAsignaturaController controller = miLoader.getController();
         stage.setResizable(false);
@@ -467,6 +475,35 @@ public class FXMLMainController implements Initializable {
             c.setTooltip(new Tooltip(a.getDescripcion()));
             filtroAsignaturas.getChildren().add(c);
         }
+    }
+    @FXML
+    private void configuracion(ActionEvent event) throws IOException {
+        Stage stage = new Stage();
+        FXMLLoader miLoader = new FXMLLoader(getClass().getResource("/ipc/main/configuracion/FXMLConfiguracion.fxml"));
+        Parent root = miLoader.load();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("Configuración");
+        stage.getIcons().add(new Image("ipc/resources/config-icon.png"));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        FXMLConfiguracionController controller = miLoader.getController();
+        stage.setResizable(false);
+        stage.showAndWait();
+    }
+
+    @FXML
+    private void ayuda(ActionEvent event) throws IOException {
+        Stage stage = new Stage();
+        FXMLLoader miLoader = new FXMLLoader(getClass().getResource("/ipc/main/ayuda/FXMLAyuda.fxml"));
+        Parent root = miLoader.load();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("Ayuda");
+        stage.getIcons().add(new Image("ipc/resources/icon-help.png"));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        FXMLAyudaController controller = miLoader.getController();
+        stage.setResizable(false);
+        stage.showAndWait();
     }
     
     public void updateTutorias() {

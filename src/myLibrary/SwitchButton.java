@@ -17,6 +17,8 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class SwitchButton extends Label
 {
@@ -53,12 +55,22 @@ public class SwitchButton extends Label
                     setText(" Listado  ");
                     setId("on");
                     setContentDisplay(ContentDisplay.RIGHT);
+                    Image imagen = new Image(getClass().getResourceAsStream("/ipc/resources/view-tuts-icon.png"));
+                    ImageView graphic = new ImageView(imagen);
+                    graphic.setFitHeight(25.0);
+                    graphic.setFitWidth(25.0);
+                    switchBtn.setGraphic(graphic);
                 }
                 else
                 {
                     setText("Calendario");
                     setId("off");
                     setContentDisplay(ContentDisplay.LEFT);
+                    Image imagen = new Image(getClass().getResourceAsStream("/ipc/resources/list-icon.png"));
+                    ImageView graphic = new ImageView(imagen);
+                    graphic.setFitHeight(25.0);
+                    graphic.setFitWidth(25.0);
+                    switchBtn.setGraphic(graphic);
                 }
             }
         });

@@ -5,7 +5,7 @@
 */
 package añadir;
 
-import Configuracion.FXMLConfiguracionController;
+import ipc.main.configuracion.FXMLConfiguracionController;
 import accesoBD.AccesoBD;
 import ipc.Main;
 import ipc.main.contextPane.Calendar;
@@ -255,6 +255,7 @@ c.getCalendar().setOnMouseClicked((event) -> {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Editar descripción");
+        stage.getIcons().add(new Image("ipc/resources/description-icon.png"));
         stage.initModality(Modality.APPLICATION_MODAL);
         FXMLDescripcionFieldController controller = miLoader.getController();
         miLoader.setController(controller);
@@ -392,7 +393,7 @@ c.getCalendar().setOnMouseClicked((event) -> {
                 Alert alert = new Alert(AlertType.WARNING);
                 alert.setTitle("Alerta");
                 alert.setHeaderText("No ha especificado ninguna anotación\n¿Quiere añadirlos ahora?");
-                
+                ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image("ipc/resources/warning-icon.png"));
                 ButtonType si = new ButtonType("Si");
                 ButtonType no = new ButtonType("No");
                 alert.getButtonTypes().clear();
@@ -434,6 +435,7 @@ c.getCalendar().setOnMouseClicked((event) -> {
         }else{
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
+            ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image("ipc/resources/error-icon.png"));
             alert.setHeaderText("Rellene todos los campos obligatorios: ");
             alert.setContentText("Alumnos\nAsignatura\nFecha\nHora de inicio\nDuración");
             Main.getMainController().updateTutorias();

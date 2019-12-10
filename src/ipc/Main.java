@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
@@ -20,6 +21,8 @@ public class Main extends Application {
     private static FXMLLoader loader;
     @Override
     public void start(Stage stage) throws Exception {
+        stage.getIcons().add(new Image("ipc/resources/logo.png"));
+        stage.setTitle("Tutorias");
         loader = new FXMLLoader(getClass().getResource("main/FXMLMain.fxml"));
         Parent root = loader.load();
         

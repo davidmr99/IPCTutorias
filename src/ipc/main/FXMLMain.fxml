@@ -34,8 +34,14 @@
                   <MenuItem fx:id="addAsignatura" mnemonicParsing="false" onAction="#addAsignatura" text="Asignatura" />
             </items>
           </Menu>
-          <Menu text="_Configuración" />
-          <Menu mnemonicParsing="false" text="Ayuda" />
+          <Menu fx:id="configuracion" onAction="#configuracion" text="_Configuración">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Configuración" />
+               </items></Menu>
+          <Menu fx:id="ayuda" mnemonicParsing="false" onAction="#ayuda" text="_Ayuda">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Ayuda" />
+               </items></Menu>
         </menus>
       </MenuBar>
       <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">

@@ -5,7 +5,7 @@
 */
 package ipc.main.weekView;
 
-import Configuracion.FXMLConfiguracionController;
+import ipc.main.configuracion.FXMLConfiguracionController;
 import ipc.Main;
 import ipc.main.FXMLMainController;
 import static java.lang.Integer.MAX_VALUE;
