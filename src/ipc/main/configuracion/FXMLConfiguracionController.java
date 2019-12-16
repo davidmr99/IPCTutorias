@@ -67,6 +67,8 @@ public class FXMLConfiguracionController implements Initializable {
     private ListView<LocalDate> vacacionesList;
     @FXML
     private AnchorPane calendarNode;
+    @FXML
+    private TableColumn<Alumno , String> apellidos;
             
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -122,6 +124,7 @@ public class FXMLConfiguracionController implements Initializable {
         tablaAlumnos.setItems(AccesoBD.getInstance().getTutorias().getAlumnosTutorizados());
         alumnos.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
         correos.setCellValueFactory(cellData -> cellData.getValue().emailProperty());
+        apellidos.setCellValueFactory(cellData -> cellData.getValue().apellidosProperty());
         
         tablaAsignaturas.setItems(AccesoBD.getInstance().getTutorias().getAsignaturas());
         asignaturas.setCellValueFactory(cellData -> cellData.getValue().descripcionProperty());

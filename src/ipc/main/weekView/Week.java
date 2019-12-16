@@ -512,9 +512,10 @@ public class Week extends GridPane{
                         tuts[i].setAlignment(Pos.BOTTOM_LEFT);
 
                         HBox hb = new HBox(new Circle(10,color),new Text(tutorias.get(i).getAsignatura().getCodigo()),text);
+                        
                         hb.setSpacing(10);
                         tuts[i].setGraphic(hb);
-
+                        
                         tuts[i].setOnMouseClicked((MouseEvent t1) -> {
                             try {
                                 Main.getMainController().viewTutoria(((TutoriaBtn) t1.getSource()).getTutoria());
