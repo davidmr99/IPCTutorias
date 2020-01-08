@@ -9,6 +9,7 @@ import accesoBD.AccesoBD;
 import añadir.FXMLAlumnoController;
 import añadir.FXMLAsignaturaController;
 import añadir.FXMLTutoriaController;
+import ipc.Main;
 import ipc.main.ayuda.FXMLAyudaController;
 import ipc.main.configuracion.FXMLConfiguracionController;
 import ipc.main.contextPane.Calendar;
@@ -116,6 +117,10 @@ public class FXMLMainController implements Initializable {
     private static ObservableList<LocalDate> vacaciones;
     private ObservableList<Asignatura> filtroAsignaturasList;
     private Button selected;
+    @FXML
+    private Menu configuracion;
+    @FXML
+    private Menu ayuda;
     
     public FXMLMainController(){
         
@@ -161,6 +166,23 @@ public class FXMLMainController implements Initializable {
                 System.out.println("OFF");
                 contextPane.getChildren().remove(tableView);
                 contextPane.getChildren().add(n);
+                System.out.println("ONnnnnnnnn");
+                if(diasBtn.isDisabled()){
+                System.out.println("days");
+                    week.drawTutorias();
+                    semanasBtn.fire();
+                    diasBtn.fire();
+                }else if(semanasBtn.isDisabled()){
+                System.out.println("weeks");
+                    week.drawTutorias();
+                    diasBtn.fire();
+                    semanasBtn.fire();
+                }else if(mesesBtn.isDisabled()){
+                System.out.println("months");
+                    calendarStuff();
+                    diasBtn.fire();
+                    mesesBtn.fire();
+                }
             }
         });
         
@@ -180,7 +202,7 @@ public class FXMLMainController implements Initializable {
             }
         });
         comboBox.setItems(alumnos);
-        tableView.setItems(tutorias);
+        tableView.getItems().addAll(tutorias);//----------------------------------------------------------------------------------------------------------------------------------------------
         tableView.setRowFactory( tv -> {
             TableRow<Tutoria> row = new TableRow<>();
             if(!row.isEmpty() && row.getItem() != null){
@@ -236,6 +258,63 @@ public class FXMLMainController implements Initializable {
         calendarMenuVBox.visibleProperty().bind(btn.switchOnProperty().not());
         tableView.visibleProperty().bind(btn.switchOnProperty());
         
+        calendarStuff();
+        
+//        filtroAsignaturas.setOnMouseClicked((event) -> {
+//            reloadAlumnosYAsignaturas();
+//            System.out.println("lista: "+ filtroAsignaturasList);
+//        });
+        
+        
+        selectAllSubjects.setOnMouseClicked((event) -> {
+           if(!btn.switchOnProperty().getValue()){
+                System.out.println("ONnnnnnnnn");
+                if(diasBtn.isDisabled()){
+                    System.out.println("days");
+                    week.drawTutorias();
+                    semanasBtn.fire();
+                    diasBtn.fire();
+                }else if(semanasBtn.isDisabled()){
+                    System.out.println("weeks");
+                    week.drawTutorias();
+                    diasBtn.fire();
+                    semanasBtn.fire();
+                }else if(mesesBtn.isDisabled()){
+                    System.out.println("months");
+                    calendarStuff();
+                    diasBtn.fire();
+                    mesesBtn.fire();
+                }
+            }else{
+               tableView.getItems().clear();
+            for(Tutoria t:tutorias){
+                boolean add = false;
+                for(Asignatura as:filtroAsignaturasList){
+                    if(t.getAsignatura().getCodigo().equals(as.getCodigo())){
+                        add = true;
+                        break;
+                    }
+                }
+                if(add || Main.getMainController().getAllSubjectsFilterButton().isSelected()){
+                    tableView.getItems().add(t);
+                }
+            }
+           }
+        });
+        
+        
+//PARA VER TODAS LAS SUBCLASES DE LOS NODOS
+//        for (Node node : calendarNode.lookupAll("*")) {
+//            System.out.println("\t" + node);
+//        }
+    }
+    
+    public CheckBox getAllSubjectsFilterButton(){
+        return selectAllSubjects;
+    }
+    
+    private void calendarStuff(){
+        
         c = new Calendar(true);
         calendarNode = c.getCalendar();
         calendarNode.visibleProperty().bind(btn.switchOnProperty().not());
@@ -245,11 +324,6 @@ public class FXMLMainController implements Initializable {
         AnchorPane.setLeftAnchor(calendarNode, 0d);
         AnchorPane.setBottomAnchor(calendarNode, 0d);
         AnchorPane.setRightAnchor(calendarNode, 0d);
-        
-//PARA VER TODAS LAS SUBCLASES DE LOS NODOS
-//        for (Node node : calendarNode.lookupAll("*")) {
-//            System.out.println("\t" + node);
-//        }
     }
     
     public static ObservableList<LocalDate> getVacaciones(){
@@ -503,10 +577,46 @@ public class FXMLMainController implements Initializable {
                 }else {
                     filtroAsignaturasList.remove(a);
                 }
+                System.out.println("asignatura: "+filtroAsignaturasList);
+                
+                if(!btn.switchOnProperty().getValue()){
+                    System.out.println("ONnnnnnnnn");
+                    if(diasBtn.isDisabled()){
+                        week.drawTutorias();
+                        semanasBtn.fire();
+                        diasBtn.fire();
+                    }else if(semanasBtn.isDisabled()){
+                        week.drawTutorias();
+                        diasBtn.fire();
+                        semanasBtn.fire();
+                    }else if(mesesBtn.isDisabled()){
+                        calendarStuff();
+                        diasBtn.fire();
+                        mesesBtn.fire();
+                    }
+                }
+            tableView.getItems().clear();
+            for(Tutoria t:tutorias){
+                boolean add = false;
+                for(Asignatura as:filtroAsignaturasList){
+                    if(t.getAsignatura().getCodigo().equals(as.getCodigo())){
+                        add = true;
+                        break;
+                    }
+                }
+                if(add || Main.getMainController().getAllSubjectsFilterButton().isSelected()){
+                    tableView.getItems().add(t);
+                }
+            }
             });
             filtroAsignaturas.getChildren().add(c);
         }
     }
+    
+    public ObservableList<Asignatura> getAsignaturaFilter(){
+        return filtroAsignaturasList;
+    }
+    
     @FXML
     private void configuracion(ActionEvent event) throws IOException {
         Stage stage = new Stage();
@@ -521,7 +631,7 @@ public class FXMLMainController implements Initializable {
         stage.setResizable(false);
         stage.showAndWait();
     }
-
+    
     @FXML
     private void ayuda(ActionEvent event) throws IOException {
         Stage stage = new Stage();
@@ -606,6 +716,7 @@ class TutoriaEstadoCelda extends TableCell<Tutoria,Tutoria.EstadoTutoria> {
         super.updateItem(item, empty);
         if (item == null || empty) {
             setText(null);
+            setGraphic(null);
         } else {
             Color c = new Color(1,1,1,1);
             if(item.value().equals(Tutoria.EstadoTutoria.PEDIDA.value())){

@@ -20,7 +20,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
@@ -39,6 +38,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import modelo.Asignatura;
 import modelo.Tutoria;
 import myLibrary.TutoriaBtn;
 
@@ -91,7 +91,7 @@ public class Week extends GridPane{
         daysArray = new LocalDate[7];
         year = day.getYear();
         week = (day.getDayOfYear()/7)+1;
-        int firstDayOfWeek = ((week - 1)*7+1) + (1 - (LocalDate.of(year,1, 1)).getDayOfWeek().getValue());
+        int firstDayOfWeek = ((week - 0)*7+1) + (1 - (LocalDate.of(year,1, 1)).getDayOfWeek().getValue());
         if(firstDayOfWeek<=0){
             year--;
             int n;
@@ -422,7 +422,7 @@ public class Week extends GridPane{
         for(LocalDate ld : daysArray){
             for(Tutoria tut : AccesoBD.getInstance().getTutorias().getTutoriasConcertadas()){
                 if(tut.getFecha().getYear() == ld.getYear() && tut.getFecha().getMonthValue() == ld.getMonthValue() && tut.getFecha().getDayOfMonth() == ld.getDayOfMonth()){
-                    tutorias.add(tut);
+                        tutorias.add(tut);
                 }
             }
         }
@@ -433,6 +433,18 @@ public class Week extends GridPane{
         Color[] col = {new Color(0.4706, 0.9686, 0.3686,1),new Color(1, 0, 0, 1),new Color(0.2784, 0.8549, 1,1),new Color(1, 0.7686, 0,1)};
         if(daysArray.length == 1){
             for(int i=0;i<tuts.length;i++){
+                
+//                System.out.println("filtross");
+                    boolean add = false;
+                    for(Asignatura a:Main.getMainController().getAsignaturaFilter()){
+//                        System.out.println("tuto: "+tutorias.get(i).getAsignatura().getCodigo()+ " filtro? "+a.getCodigo());
+                        if(a.getCodigo().equals(tutorias.get(i).getAsignatura().getCodigo())){
+                            add = true;
+                            break;
+                        }
+                    }
+                    if(add || Main.getMainController().getAllSubjectsFilterButton().isSelected()){
+                
                 tuts[i] = new TutoriaBtn(tutorias.get(i));
                 tuts[i].getStyleClass().add("tutoriaBtn");
 
@@ -474,12 +486,25 @@ public class Week extends GridPane{
                         Logger.getLogger(Week.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 });
+                    }else{
+                        System.out.println("aplicando filtro a "+tutorias.get(i).getAsignatura().getCodigo());
+                    }
             }
             
         }else{
             int k = 1;
             for(LocalDate ld : daysArray){
                 for(int i = 0; i<tuts.length;i++){
+//                    System.out.println("filtross");
+                    boolean add = false;
+                    for(Asignatura a:Main.getMainController().getAsignaturaFilter()){
+//                        System.out.println("tuto: "+tutorias.get(i).getAsignatura().getCodigo()+ " filtro? "+a.getCodigo());
+                        if(a.getCodigo().equals(tutorias.get(i).getAsignatura().getCodigo())){
+                            add = true;
+                            break;
+                        }
+                    }
+                    if(add || Main.getMainController().getAllSubjectsFilterButton().isSelected()){
                     if(tutorias.get(i).getFecha().getYear() == ld.getYear() && tutorias.get(i).getFecha().getMonthValue()== ld.getMonthValue() && tutorias.get(i).getFecha().getDayOfMonth()== ld.getDayOfMonth()){
                         tuts[i] = new TutoriaBtn(tutorias.get(i));
                         tuts[i].getStyleClass().add("tutoriaBtn");
@@ -491,7 +516,7 @@ public class Week extends GridPane{
                         int hFin = Week.getIndex(timef, false);
 
                         add(tuts[i],k,hInicio,1,hFin-hInicio);
-
+                        
                         tuts[i].setPrefSize(tuts[i].getParent().getBoundsInLocal().getWidth(), tuts[i].getParent().getBoundsInLocal().getHeight());
                         tuts[i].setMinSize(((Control)getChildren().get(i)).getWidth(), ((Control)getChildren().get(i)).getHeight());
 
@@ -523,7 +548,10 @@ public class Week extends GridPane{
                                 Logger.getLogger(Week.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         });
-                    } 
+                    }
+                    }else{
+                        System.out.println("aplicando filtro a "+tutorias.get(i).getAsignatura().getCodigo());
+                    }
                 }
                 k++;
             }

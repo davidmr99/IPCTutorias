@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import modelo.Asignatura;
 import modelo.Tutoria;
 
 /**
@@ -88,7 +89,21 @@ public class Calendar{
                             if(tut.getFecha().equals(item)){
                                 for(int i= 0; i<Tutoria.EstadoTutoria.values().length;i++){
                                     if(tut.getEstado().equals(Tutoria.EstadoTutoria.values()[i])){
+                                        
+//                        System.out.println("filtross calendar");
+                    boolean add = false;
+                                        System.out.println("-------------------------------UPDATING CALENDAR-------------------------------");
+                    for(Asignatura a:Main.getMainController().getAsignaturaFilter()){
+//                        System.out.println("tuto: "+tut.getAsignatura().getCodigo()+ " filtro? "+a.getCodigo());
+                        if(a.getCodigo().equals(tut.getAsignatura().getCodigo())){
+                            System.out.println("No deberia añadir porque no esta en el filtro: "+a.getCodigo()+" pero todas on? "+Main.getMainController().getAllSubjectsFilterButton().isSelected());
+                            add = true;
+                            break;
+                        }
+                    }
+                    if(add || Main.getMainController().getAllSubjectsFilterButton().isSelected()){
                                         states[i] = true;
+                    }
                                     }
                                 }
                                 //setStyle("-fx-background-color:brown;");
